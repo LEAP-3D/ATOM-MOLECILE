@@ -2,7 +2,7 @@
 "use client";
 
 const Editor = () => {
-  return <>Munkhbayar</>;
+  return <>Munkhbayar </>;
 };
 
 export default Editor;
