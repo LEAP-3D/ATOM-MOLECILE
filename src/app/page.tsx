@@ -1,7 +1,7 @@
 "use client";
 
 const Home = () => {
-  return <>hello from home Bayraa shit like that cd ci yaml change</>;
+  return <>Undral</>;
 };
 
 export default Home;
