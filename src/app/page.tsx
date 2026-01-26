@@ -1,7 +1,7 @@
 "use client";
 
 const Home = () => {
-  return <>Undral</>;
+  return <>Undraaaaaaaaßl</>;
 };
 
 export default Home;
