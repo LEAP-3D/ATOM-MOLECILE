@@ -24,11 +24,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <title>My App</title>
-        <meta name="description" content="Demo" />
-      </head>
-      <body>{children}</body>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
