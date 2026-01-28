@@ -13,7 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 1. LINT ШАТ: Кодны загвар шалгах
   lint:
+    name: "Linting: Code Quality"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,35 +24,56 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx prisma generate # Хэрэв lint-д prisma төрлүүд хэрэгтэй бол
+      - run: npx prisma generate
       - run: npm run lint
 
-  deploy-preview:
+  # 2. BUILD ШАТ: Vercel дээр барьж үзэх (Artifact үүсгэх)
+  build:
+    name: "Building: Vercel Artifacts"
     runs-on: ubuntu-latest
     needs: lint
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      # 1. Vercel-ээс тохиргоог татах
-      - name: Pull Vercel Environment Information
+      - name: Pull Vercel Environment Info
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # 2. Төслийг Vercel орчинд барих (Build)
-      # Энэ шатанд Prisma болон бусад build алдаанууд шалгагдана
-      - name: Build Project Artifacts
+      - name: Vercel Build
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # 3. Бэлэн болсон build-ийг байршуулах (Deploy)
-      - name: Deploy Preview to Vercel
+      # Бусад шатанд ашиглахын тулд build-ийг түр хадгалах
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-build-artifacts
+          path: .vercel/output
+          retention-days: 1
+
+  # 3. PREVIEW ШАТ: Бэлэн болсон Build-ийг Deploy хийх
+  preview:
+    name: "Preview: Deploy to Vercel"
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: vercel-build-artifacts
+          path: .vercel/output
+
+      - name: Deploy to Vercel
         id: deploy
         run: |
           DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
@@ -59,11 +82,10 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # PR дээр Preview линкийг коммент болгож үлдээх
       - name: Comment on PR
         uses: mshick/add-pr-comment@v2
         with:
           message: |
             🚀 **Vercel Preview Deployment Complete!**
-            - **Preview URL**: ${{ steps.deploy.outputs.url }}
             - **Status**: Success ✅
+            - **URL**: ${{ steps.deploy.outputs.url }}
