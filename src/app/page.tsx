@@ -105,6 +105,7 @@ export default function Home() {
         <div className="flex justify-center items-center gap-4">
           <span>Undak</span>
           <span>Beeb</span>
+          <span>Bayaraa</span>
           <span>Tumee</span>
         </div>
       </Marquee>
