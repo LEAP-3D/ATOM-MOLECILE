@@ -2,25 +2,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, FolderKanban, TrendingUp, Bell, Eye, ChevronRight } from 'lucide-react';
 
 import { Header } from './components/Header';
 import { TaskProgressChart } from './components/line,bar,pie charts/TaskProgressChart';
-import type { WorkspaceItem, TaskDataItem, Employee } from './components/types';
+import type { TaskDataItem } from './components/types';
+
 import { IconHome, IconUser, IconSettings } from "@tabler/icons-react";
-
 import { Sidebar, SidebarBody, SidebarLink } from "./components/Sidebar";
-import { FunnelChartComponent } from './components/FunnelChartComponent';
+
 import AreaChartFillByValue from './components/line,bar,pie charts/AreaChart';
-import MyChoropleth from './components/Choropleth';
 import MyAreaBump from './components/line,bar,pie charts/AreaBump';
-
-
-const workspaces: WorkspaceItem[] = [
-  {id: 'ws-1', name: 'Pertamina', color: 'bg-orange-500' },
-  {id: 'ws-2', name: 'SCBD Tower', color: 'bg-red-500' },
-  {id: 'ws-3', name: 'Beos Hotel', color: 'bg-orange-500' },
-];
 
 const taskData: TaskDataItem[] = [
   { day: 'Mon', value1: 75, value2: 65 },
@@ -33,18 +24,18 @@ const taskData: TaskDataItem[] = [
 ];
 
 export default function DashboardPage() {
-  const [activeNav, setActiveNav] = useState('dashboard');
-
-  // Chart sections array (to avoid repeated code)
+  // Chart sections array
   const chartSections = Array(5).fill(taskData);
 
   return (
-   <div className="flex h-screen 
-  bg-gradient-to-br 
-  from-[#050b2e] 
-  via-[#0f172a] 
-  to-[#1b0f3a] 
-  text-gray-100">
+    <div className="
+      flex h-screen 
+      bg-gradient-to-br 
+      from-[#050b2e] 
+      via-[#0f172a] 
+      to-[#1b0f3a] 
+      text-gray-100
+    ">
       {/* Sidebar */}
       <Sidebar>
         <SidebarBody>
@@ -57,22 +48,22 @@ export default function DashboardPage() {
       </Sidebar>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto scrollbar-hide text-gray-100">
+      <main className="flex-1 overflow-auto scrollbar-hide">
         <div className="sticky top-0 z-20">
-    <Header />
-  </div>
-        {/* Loop over chart sections */}
-      <div className="px-5 mt-6">
-  <div className="h-12 flex items-center font-medium text-gray-700">
-    Time Series Chart
-  </div>
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
-    <TaskProgressChart data={chartSections[0]} />
-    <AreaChartFillByValue/>
-    <MyAreaBump/>
-    
-  </div>
-</div>
+          <Header />
+        </div>
+
+        <div className="px-5 mt-6">
+          <div className="h-12 flex items-center font-medium text-gray-400">
+            Time Series Chart
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
+            <TaskProgressChart data={chartSections[0]} />
+            <AreaChartFillByValue />
+            <MyAreaBump />
+          </div>
+        </div>
       </main>
     </div>
   );

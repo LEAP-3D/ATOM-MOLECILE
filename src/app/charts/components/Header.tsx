@@ -1,7 +1,8 @@
 "use client";
 
 import type { FC } from "react";
-import { Search, Bell } from "lucide-react";
+import Image from "next/image";
+import { Search } from "lucide-react";
 
 export const Header: FC = () => {
   return (
@@ -43,10 +44,8 @@ export const Header: FC = () => {
         />
       </div>
 
-      {/* Right: Notifications + User */}
+      {/* Right: User */}
       <div className="flex items-center gap-6">
-
-        {/* User Profile */}
         <div
           className="relative flex items-center cursor-pointer group justify-end overflow-hidden w-44"
           role="button"
@@ -65,17 +64,12 @@ export const Header: FC = () => {
             </div>
 
             {/* Profile Image */}
-            <img
+            <Image
               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nancy"
               alt="Nancy Livon"
-              className="
-                w-10 h-10 
-                rounded-full 
-                object-cover 
-                border border-white/20
-                shadow-md
-              "
-              loading="lazy"
+              width={40}
+              height={40}
+              className="rounded-full border border-white/20 shadow-md"
             />
           </div>
         </div>

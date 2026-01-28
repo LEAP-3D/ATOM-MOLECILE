@@ -4,17 +4,17 @@ import React, { useState, createContext, useContext } from "react";
 import { motion } from "motion/react";
 import { cn } from "../../../../lib/utils";
 
-interface Links {
+type Links = {
   label: string;
   href: string;
-  icon: React.JSX.Element | React.ReactNode;
-}
+  icon: React.ReactNode;
+};
 
-interface SidebarContextProps {
+type SidebarContextProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   animate: boolean;
-}
+};
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined);
 
@@ -39,8 +39,8 @@ export const SidebarProvider = ({
 }) => {
   const [openState, setOpenState] = useState(false);
 
-  const open = openProp !== undefined ? openProp : openState;
-  const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
+  const open = openProp ?? openState;
+  const setOpen = setOpenProp ?? setOpenState;
 
   return (
     <SidebarContext.Provider value={{ open, setOpen, animate }}>

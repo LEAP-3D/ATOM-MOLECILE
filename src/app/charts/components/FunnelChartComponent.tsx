@@ -1,6 +1,5 @@
 "use client";
-
-import { FC } from "react";
+import type { FC } from "react";
 import {
   ResponsiveContainer,
   FunnelChart,
@@ -9,6 +8,7 @@ import {
   LabelList
 } from "recharts";
 import { funnelData } from "./FunnelChartData";
+
 
 export const FunnelChartComponent: FC = () => {
   return (

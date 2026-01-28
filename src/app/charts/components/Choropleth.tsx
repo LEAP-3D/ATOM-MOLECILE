@@ -4,11 +4,16 @@ import { ResponsiveChoropleth } from '@nivo/geo'
 import { feature } from 'topojson-client'
 import world from 'world-atlas/countries-110m.json'
 
-// TypeScript-д алдаа гарахаас сэргийлэх
-const worldFeatures: any = feature(
-  world as any,
-  (world as any).objects.countries
-)
+import type { FeatureCollection, Geometry } from 'geojson'
+import type { Topology } from 'topojson-specification'
+
+// TopoJSON-д зөв type өгч байна (any ашиглахгүй)
+const worldTopology = world as unknown as Topology
+
+const worldFeatures = feature(
+  worldTopology,
+  worldTopology.objects.countries
+) as FeatureCollection<Geometry>
 
 const features = worldFeatures.features
 
@@ -30,7 +35,7 @@ const MyChoropleth = () => (
       p-5
       shadow-lg
     "
-    style={{ height: 300 }} // card-д тааруулах өндөр
+    style={{ height: 300 }}
   >
     <ResponsiveChoropleth
       data={data}
