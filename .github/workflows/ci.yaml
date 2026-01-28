@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -36,7 +36,7 @@ jobs:
         run: npm run lint
 
   build:
-    name: Build
+    name: build
     runs-on: ubuntu-latest
     needs: lint
     steps:
@@ -59,7 +59,7 @@ jobs:
         run: npm run build
 
   preview:
-    name: Deploy Preview
+    name: preview
     runs-on: ubuntu-latest
     needs: build
     steps:
