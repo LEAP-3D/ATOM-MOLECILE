@@ -55,9 +55,9 @@ export async function POST(request: Request) {
         );
       }
 
-     
+      // ✅ excel_files table ашиглах (excel_data биш!)
       const { data: dbData, error: dbError } = await supabase
-        .from('excel_files') 
+        .from('excel_files')  // ← Энд зөв байгаа эсэхийг шалга!
         .insert({
           file_name: file.name,
           file_path: filePath,
