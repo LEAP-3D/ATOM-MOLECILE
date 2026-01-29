@@ -2,16 +2,19 @@ export const dynamic = 'force-dynamic'; // Build үед энэ хуудсыг с
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables');
-}
+// if (!supabaseUrl || !supabaseKey) {
+//   throw new Error('Missing Supabase environment variables');
+// }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return NextResponse.json({ error: 'Серверийн тохиргоо дутуу байна.' }, { status: 500 });
+  }
   try {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
