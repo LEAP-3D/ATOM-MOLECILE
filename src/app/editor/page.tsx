@@ -18,8 +18,6 @@ export default function EditorPage() {
       >
         <Upload size={24} />
       </button>
-
-      
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
      
