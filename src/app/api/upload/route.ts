@@ -22,7 +22,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
     const uploadedFiles = [];
 
     for (const file of files) {
