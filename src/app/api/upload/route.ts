@@ -1,10 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
   try {
@@ -55,9 +59,8 @@ export async function POST(request: Request) {
         );
       }
 
-      // ✅ excel_files table ашиглах (excel_data биш!)
       const { data: dbData, error: dbError } = await supabase
-        .from('excel_files')  // ← Энд зөв байгаа эсэхийг шалга!
+        .from('excel_files')
         .insert({
           file_name: file.name,
           file_path: filePath,
