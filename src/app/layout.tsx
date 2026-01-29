@@ -138,7 +138,7 @@ export default function RootLayout({
             <SignedOut>
               <SignInButton>
                 <button className="px-4 sm:px-5 h-10 sm:h-12 text-sm sm:text-base font-medium rounded-full bg-black text-white hover:bg-gray-300 cursor-pointer">
-                  Sign In
+                  Sign In...
                 </button>
               </SignInButton>
               <SignUpButton>
