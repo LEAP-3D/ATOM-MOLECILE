@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'; // Build үед энэ хуудсыг статик гэж тооцохгүй байхыг зааж өгнө
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
