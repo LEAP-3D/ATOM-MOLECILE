@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "./_features/Header";
 import { Marquee } from "@/components/ui/marquee";
 import { cn } from "@/lib/utils";
 const reviews = [
@@ -45,7 +44,7 @@ const ReviewCard = ({
         // light styles
         "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
         // dark styles
-        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
       )}
     >
       <div className="flex flex-row items-center gap-2">
@@ -99,7 +98,7 @@ export function MarqueeDemo() {
 export default function Home() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
 
       <Marquee>
         <div className="flex justify-center items-center gap-4">

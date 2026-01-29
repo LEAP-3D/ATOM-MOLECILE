@@ -13,7 +13,6 @@ export default function Header() {
           <Button>Sign up</Button>
         </div>
       </div>
-      <div></div>
     </div>
   );
 }
