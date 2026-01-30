@@ -1,17 +1,17 @@
 name: CI
-
+ 
 on:
   pull_request:
     branches: [main]
-
+ 
 permissions:
   contents: read
   pull-requests: write
-
+ 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
+ 
 jobs:
   lint:
     name: lint
@@ -19,22 +19,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
+ 
       - name: Install dependencies
         run: npm ci
-
+ 
       - name: Generate Prisma Client
         run: npx prisma generate
-
+ 
       - name: Run ESLint
         run: npm run lint
 
+ 
   build:
     name: build
     runs-on: ubuntu-latest
@@ -47,25 +48,27 @@ jobs:
       SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
+ 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
+ 
       - name: Install dependencies
         run: npm ci
-
+ 
       - name: Generate Prisma Client
         run: npx prisma generate
-
+ 
       - name: Build Next.js
         run: npm run build
 
+ 
   preview:
     name: preview
     runs-on: ubuntu-latest
@@ -80,30 +83,31 @@ jobs:
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+ 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
+ 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
-
+ 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
+ 
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
+ 
       - name: Deploy to Vercel
         id: deploy
         run: |
           DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-
+ 
       - name: Comment on PR
         uses: mshick/add-pr-comment@v2
         with:
@@ -111,3 +115,4 @@ jobs:
             🚀 **Vercel Preview Deployment Ready!**
             - **Preview URL**: ${{ steps.deploy.outputs.url }}
             - **Status**: Success ✅
+            
