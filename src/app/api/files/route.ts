@@ -17,7 +17,6 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Файл татах URL үүсгэх
     const filesWithUrls = await Promise.all(
       data.map(async (file) => {
         const { data: urlData } = await supabase
