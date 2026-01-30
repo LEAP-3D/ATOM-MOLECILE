@@ -1,156 +1,113 @@
 name: CI
-
+ 
 on:
   pull_request:
     branches: [main]
-
+ 
 permissions:
   contents: read
-
   pull-requests: write
-
+ 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-
   cancel-in-progress: true
-
+ 
 jobs:
-  # 1. LINT ШАТ: Кодны чанар шалгах
-
   lint:
     name: lint
-
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
-
         uses: actions/setup-node@v4
-
         with:
           node-version: 20
-
           cache: npm
-
+ 
       - name: Install dependencies
-
         run: npm ci
-
+ 
       - name: Generate Prisma Client
-
         run: npx prisma generate
-
+ 
       - name: Run ESLint
-
         run: npm run lint
-
-  # 2. BUILD ШАТ: Next.js барьж үзэх
-
+ 
   build:
     name: build
-
     runs-on: ubuntu-latest
-
     needs: lint
-
     env:
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-
       CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
+      SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+ 
     steps:
       - name: Checkout repository
-
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
-
         uses: actions/setup-node@v4
-
         with:
           node-version: 20
-
           cache: npm
-
+ 
       - name: Install dependencies
-
         run: npm ci
-
+ 
       - name: Generate Prisma Client
-
         run: npx prisma generate
-
+ 
       - name: Build Next.js
-
         run: npm run build
-
-  # 3. PREVIEW ШАТ: Vercel рүү байршуулах
-
+ 
   preview:
     name: preview
-
     runs-on: ubuntu-latest
-
     needs: build
-
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-
       CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-
+      SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+ 
     steps:
       - name: Checkout repository
-
         uses: actions/checkout@v4
-
+ 
       - name: Setup Node
-
         uses: actions/setup-node@v4
-
         with:
           node-version: 20
-
+ 
       - name: Install Vercel CLI
-
         run: npm install --global vercel@latest
-
+ 
       - name: Pull Vercel Environment Information
-
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-
+ 
       - name: Build Project Artifacts
-
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
+ 
       - name: Deploy to Vercel
-
         id: deploy
-
         run: |
-
           DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-
+ 
       - name: Comment on PR
-
         uses: mshick/add-pr-comment@v2
-
         with:
           message: |
-
             🚀 **Vercel Preview Deployment Ready!**
-
             - **Preview URL**: ${{ steps.deploy.outputs.url }}
-
             - **Status**: Success ✅
