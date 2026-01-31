@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import prisma from "../../../../../lib/prisma";
-import { Prisma } from "@prisma/client"; // Prisma-ийн төрлүүдийг авах
+import type { Prisma } from "@prisma/client"; // Prisma-ийн төрлүүдийг авах
 
 export async function POST(req: Request) {
   try {
