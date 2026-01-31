@@ -49,8 +49,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       if (document.getElementById("file-input"))
         (document.getElementById("file-input") as HTMLInputElement).value = "";
       setTimeout(() => setMessage(""), 3000);
-    } catch (err: any) {
-      setMessage(err.response?.data?.error || "Алдаа гарлаа");
+    } catch (err: unknown) {
+      // 1. Энэ нь Axios-оос ирсэн алдаа мөн эсэхийг шалгах
+      if (axios.isAxiosError(err)) {
+        const serverMessage = err.response?.data?.error;
+        setMessage(serverMessage || "Сервер талд алдаа гарлаа");
+      } else if (err instanceof Error) {
+        // 2. Ерөнхий JS алдаа бол (жишээ нь сүлжээ тасрах)
+        setMessage(err.message);
+      } else {
+        // 3. Тодорхойгүй алдаа
+        setMessage("Тодорхойгүй алдаа гарлаа");
+      }
+      console.error("Upload error:", err);
     } finally {
       setUploading(false);
     }
