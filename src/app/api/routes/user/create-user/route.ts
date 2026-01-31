@@ -46,7 +46,7 @@ export async function POST(req: Request) {
   console.log("Webhook body:", payload);
   console.log("Headers:", headerPayload);
   console.log(
-    "Secret length:",
+    "Secret lengthhhhhhh:",
     process.env.CLERK_WEBHOOK_SIGNING_SECRET?.length
   );
 
