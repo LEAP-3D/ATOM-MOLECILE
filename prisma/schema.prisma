@@ -20,17 +20,13 @@ model User {
   image     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  class     Class    @relation(fields: [classId], references: [id])
-  classId   String
+  // class     Class    @relation(fields: [classId], references: [id])
+  // classId   String
 }
 
-model Class {
-  id        String   @id @default(nanoid())
-  email     String   @unique
-  name      String?
-  password  String?
-  image     String
+model uploadedFile {
+  id        Int      @id @default(autoincrement())
+  fileName  String
+  content   Json
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User[]
 }
