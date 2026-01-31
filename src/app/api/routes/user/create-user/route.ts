@@ -43,6 +43,12 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   console.log(`📩 Clerk event: ${eventType} for ID: ${id}`);
+  console.log("Webhook body:", payload);
+  console.log("Headers:", headerPayload);
+  console.log(
+    "Secret length:",
+    process.env.CLERK_WEBHOOK_SIGNING_SECRET?.length
+  );
 
   // ✅ USER CREATED & UPDATED (UPSERT ашиглах нь илүү найдвартай)
   if (eventType === "user.created" || eventType === "user.updated") {
