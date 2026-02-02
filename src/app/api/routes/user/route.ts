@@ -11,7 +11,6 @@ export async function POST(req: Request) {
     return new NextResponse("Missing signing secret", { status: 500 });
   }
 
-  // 1. Header-үүдийг авах (TypeError-оос сэргийлж лог хийхгүй байх)
   const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
@@ -33,68 +32,46 @@ export async function POST(req: Request) {
   try {
     const wh = new Webhook(SIGNING_SECRET);
     evt = wh.verify(payload, svixHeaders) as WebhookEvent;
-  } catch (err) {
-    console.error(
-      "❌ Webhook verification failed. Secret Length:",
-      SIGNING_SECRET.length
-    );
+  } catch (_err) {
+    // ✅ Засагдсан: 'err' -> '_err'
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
   const { id } = evt.data;
   const eventType = evt.type;
 
-  // ✅ USER CREATED & UPDATED
   if (eventType === "user.created" || eventType === "user.updated") {
     const { email_addresses, first_name, last_name, image_url } = evt.data;
     const email = email_addresses[0]?.email_address;
 
     if (!id || !email) return new NextResponse("Missing data", { status: 400 });
 
-    try {
-      // P2002 алдаанаас сэргийлж "where: { email }" ашиглах нь илүү найдвартай
-      // Учир нь хуучин ID-тай ижил имэйл байвал шинэчлэх шаардлагатай.
-      await prisma.user.upsert({
-        where: { email: email },
-        update: {
-          id: id,
-          firstName: first_name,
-          lastName: last_name,
-          imageUrl: image_url,
-        },
-        create: {
-          id: id,
-          email: email,
-          firstName: first_name,
-          lastName: last_name,
-          imageUrl: image_url,
-        },
-      });
-      console.log(`✅ User ${id} upserted in Supabase`);
-    } catch (dbError: any) {
-      console.error("❌ Database Error:", dbError.message);
-      return new NextResponse("Database update failed", { status: 500 });
-    }
+    // ✅ P2002 алдаанаас сэргийлж email-ээр хайж upsert хийх
+    await prisma.user.upsert({
+      where: { email: email },
+      update: {
+        id: id,
+        firstName: first_name,
+        lastName: last_name,
+        imageUrl: image_url,
+      },
+      create: {
+        id: id,
+        email: email,
+        firstName: first_name,
+        lastName: last_name,
+        imageUrl: image_url,
+      },
+    });
   }
 
-  // ✅ USER DELETED
-  if (eventType === "user.deleted") {
-    if (id) {
-      await prisma.user
-        .delete({
-          where: { id: id },
-        })
-        .catch((e) => console.log("User already deleted or not found"));
-      console.log(`✅ User ${id} deleted from Supabase`);
-    }
+  if (eventType === "user.deleted" && id) {
+    await prisma.user
+      .delete({
+        where: { id: id },
+      })
+      .catch((_e) => console.log("User already deleted")); // ✅ Засагдсан: 'e' -> '_e'
   }
-
-  // Аюултай логуудыг устгасан
-  console.log(`📩 Clerk event: ${eventType} for ID: ${id}`);
 
   return NextResponse.json({ success: true });
-}
-
-export async function GET() {
-  return Response.json({ ok: true });
 }
