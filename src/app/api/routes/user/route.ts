@@ -11,7 +11,6 @@ export async function POST(req: Request) {
     return new NextResponse("Missing signing secret", { status: 500 });
   }
 
-  // Header-үүдийг авах
   const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
@@ -21,7 +20,6 @@ export async function POST(req: Request) {
     return new NextResponse("No svix headers", { status: 400 });
   }
 
-  // Payload-ийг текст хэлбэрээр авах (verify хийхэд хэрэгтэй)
   const payload = await req.text();
   const svixHeaders = {
     "svix-id": svix_id,
@@ -35,24 +33,24 @@ export async function POST(req: Request) {
     const wh = new Webhook(SIGNING_SECRET);
     evt = wh.verify(payload, svixHeaders) as WebhookEvent;
   } catch (err) {
-    console.error("❌ Webhook verification failed:", err);
+    console.error("❌ Webhook verification failed", err);
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
   const { id } = evt.data;
   const eventType = evt.type;
 
-  // ✅ USER CREATED & UPDATED (UPSERT ашиглах нь илүү найдвартай)
   if (eventType === "user.created" || eventType === "user.updated") {
     const { email_addresses, first_name, last_name, image_url } = evt.data;
     const email = email_addresses[0]?.email_address;
 
     if (!id || !email) return new NextResponse("Missing data", { status: 400 });
 
+    // ✅ P2002 алдаанаас сэргийлж email-ээр хайж upsert хийх
     await prisma.user.upsert({
-      where: { id: id },
+      where: { email: email },
       update: {
-        email: email,
+        id: id,
         firstName: first_name,
         lastName: last_name,
         imageUrl: image_url,
@@ -65,29 +63,15 @@ export async function POST(req: Request) {
         imageUrl: image_url,
       },
     });
-
-    console.log(`✅ User ${id} upserted in Supabase`);
   }
 
-  console.log(`📩 Clerk event: ${eventType} for ID: ${id}`);
-  console.log("Webhook body:", payload);
-  console.log(
-    "Secret lengthhhhhhh:",
-    process.env.CLERK_WEBHOOK_SIGNING_SECRET?.length
-  );
-  // ✅ USER DELETED
-  if (eventType === "user.deleted") {
-    if (id) {
-      await prisma.user.delete({
+  if (eventType === "user.deleted" && id) {
+    await prisma.user
+      .delete({
         where: { id: id },
-      });
-      console.log(`✅ User ${id} deleted from Supabase`);
-    }
+      })
+      .catch((_e) => console.log("User already deleted")); // ✅ Засагдсан: 'e' -> '_e'
   }
 
   return NextResponse.json({ success: true });
-}
-
-export async function GET() {
-  return Response.json({ ok: true });
 }

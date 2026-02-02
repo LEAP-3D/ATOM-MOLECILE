@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import prisma from "../../../../../lib/prisma";
-import type { Prisma } from "@prisma/client"; // Prisma-ийн төрлүүдийг авах
+import type { Prisma } from "@prisma/client";
+import { auth } from "@clerk/nextjs/server"; // ✅ Clerk нэмэв
 
 export async function POST(req: Request) {
   try {
+    // 1. Хэрэглэгчийн сессийг шалгах
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ error: "Нэвтрээгүй байна" }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const file = formData.get("files") as File;
 
@@ -16,17 +24,16 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(bytes);
     const workbook = XLSX.read(buffer, { type: "buffer" });
 
-    // Excel-ээс ирсэн өгөгдлийг JSON болгох
     const jsonData = XLSX.utils.sheet_to_json(
       workbook.Sheets[workbook.SheetNames[0]]
     );
 
-    // Prisma ашиглан хадгалах
-    // jsonData-г Prisma.InputJsonValue руу хөрвүүлж ESLint алдааг засна
+    // 2. userId-г дамжуулж хүснэгтүүдийг холбох
     const savedFile = await prisma.uploadedFile.create({
       data: {
         fileName: file.name,
         content: jsonData as Prisma.InputJsonValue,
+        userId: userId, // ✅ Хүснэгт хоорондын холболт
       },
     });
 
@@ -35,7 +42,7 @@ export async function POST(req: Request) {
       id: savedFile.id.toString(),
     });
   } catch (error: unknown) {
-    // any-г арилгаж, аюулгүй байдлаар алдааг барих
+    // ✅ 'any' ашиглахгүйгээр засав
     const errorMessage =
       error instanceof Error ? error.message : "Тодорхойгүй алдаа гарлаа";
     console.error("Upload error:", error);
