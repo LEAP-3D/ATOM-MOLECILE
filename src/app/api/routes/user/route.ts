@@ -32,8 +32,8 @@ export async function POST(req: Request) {
   try {
     const wh = new Webhook(SIGNING_SECRET);
     evt = wh.verify(payload, svixHeaders) as WebhookEvent;
-  } catch (_err) {
-    // ✅ Засагдсан: 'err' -> '_err'
+  } catch (err) {
+    console.error("❌ Webhook verification failed", err);
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
