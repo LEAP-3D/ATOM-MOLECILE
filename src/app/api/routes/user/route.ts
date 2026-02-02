@@ -71,7 +71,6 @@ export async function POST(req: Request) {
 
   console.log(`📩 Clerk event: ${eventType} for ID: ${id}`);
   console.log("Webhook body:", payload);
-  console.log("Headers:", headerPayload);
   console.log(
     "Secret lengthhhhhhh:",
     process.env.CLERK_WEBHOOK_SIGNING_SECRET?.length
