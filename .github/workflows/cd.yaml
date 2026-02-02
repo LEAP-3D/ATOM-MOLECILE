@@ -1,44 +1,44 @@
-# name: CD
+name: CD
 
-# on:
-#   push:
-#     branches: [main] # Зөвхөн main дээр push/merge хийхэд ажиллана
+on:
+  push:
+    branches: [main] # Зөвхөн main дээр push/merge хийхэд ажиллана
 
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
-# jobs:
-#   deploy:
-#     name: Production Deploy
-#     runs-on: ubuntu-latest
-#     env:
-#       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-#       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-#       # Next.js build-д шаардлагатай бүх ENV-үүдийг энд бичнэ
-#       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-#       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-#       CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-#       SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-#       SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+jobs:
+  deploy:
+    name: Production Deploy
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      # Next.js build-д шаардлагатай бүх ENV-үүдийг энд бичнэ
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+      SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-#       - name: Setup Node
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 20
-#           cache: npm
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-#       - name: Install Vercel CLI
-#         run: npm install --global vercel@latest
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
-#       - name: Pull Vercel Environment Information
-#         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-#       - name: Build Project Artifacts
-#         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-#       - name: Deploy to Vercel (Production)
-#         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to Vercel (Production)
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
