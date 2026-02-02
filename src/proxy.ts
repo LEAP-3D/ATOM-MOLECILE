@@ -1,10 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 // 1. Webhook замыг "Нээлттэй" гэж бүртгэх
-const isPublicRoute = createRouteMatcher([
-  "/api/routes/user/create-user(.*)",
-  "/",
-]);
+const isPublicRoute = createRouteMatcher(["/api/routes/user(.*)", "/"]);
 
 export default clerkMiddleware(async (auth, request) => {
   // 2. Хэрэв нээлттэй зам биш бол Clerk-ийн хамгаалалтыг ажиллуулна
