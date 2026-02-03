@@ -1,5 +1,6 @@
 "use client";
-import { BarChart3, Github, Twitter, Linkedin, Link } from "lucide-react";
+import { BarChart3, Github, Twitter, Linkedin } from "lucide-react";
+import Link from "next/link";
 
 const footerLinks = {
   product: [
@@ -34,13 +35,13 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <a href="/" className="flex items-center gap-3 mb-4">
+            <Link href="/" className="flex items-center gap-3 mb-4">
               {/* div-ийн оронд span ашиглах эсвэл div-ээ болих */}
               <span className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-primary-foreground" />
               </span>
               <span className="text-xl font-bold text-foreground">DataViz</span>
-            </a>
+            </Link>
             <p className="text-sm text-muted-foreground mb-6 max-w-xs">
               Transform your Excel data into beautiful, interactive
               visualizations in seconds.
