@@ -34,8 +34,17 @@ export default function Header() {
           </div>
         </div>
       </SignedOut>
-      <SignedIn>
-        <UserButton />
+      <SignedIn><div className="flex w-full h-full justify-between items-center px-4 sm:px-8"><div
+            className="relative group overflow-hidden cursor-pointer"
+            onClick={() => (window.location.href = "/")}
+          >
+            <div className="bg-linear-to-r from-chart-1 via-chart-2 to-chart-3 bg-size-[200%_auto] bg-clip-text text-transparent animate-gradient-x font-black text-3xl tracking-tighter">
+              DataViz
+            </div>
+            <div className="h-1 w-0 group-hover:w-full transition-all duration-300 bg-linear-to-r from-chart-1 to-chart-3 rounded-full" />
+          </div>
+        <UserButton /></div>
+        
       </SignedIn>
     </header>
   );
