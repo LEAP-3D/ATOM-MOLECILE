@@ -125,8 +125,8 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <HeroSection />
-      <FeaturesSection />
       <ChartPreviewSection />
+      <FeaturesSection />
       <Footer />
     </main>
   );
