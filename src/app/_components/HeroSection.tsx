@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+
+
 type Particle = {
   id: number;
   x: number;
@@ -174,7 +177,27 @@ export function HeroSection() {
           Upload your spreadsheet and watch it transform into stunning,
           interactive visualizations in seconds.
         </p>
+        <div className="mt-10 flex justify-center">
+  
+        <Link href="/charts">
+        <button
+           className="
+           px-8 py-4
+           rounded-full
+           bg-gradient-to-r from-chart-1 via-chart-2 to-chart-3
+           text-white
+           text-lg font-semibold
+           over:scale-105
+           transition-transform
+           "
+          >
+          Try Charts
+        </button>
+       </Link>
+</div>
+
       </div>
+
     </section>
   );
 }
