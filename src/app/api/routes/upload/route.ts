@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
-import prisma from "../../../../../lib/prisma";
+import prisma from "../../../../lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { auth } from "@clerk/nextjs/server"; // ✅ Clerk нэмэв
 
