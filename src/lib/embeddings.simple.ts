@@ -1,29 +1,16 @@
-/**
- * ЗӨВХӨН PINECONE - AI ХЭРЭГГҮЙ!
- * 
- * Энгийн математик аргаар embedding үүсгэнэ.
- * Semantic search ажиллахгүй, гэхдээ exact match болон
- * character similarity-аар хайлт хийх боломжтой.
- */
 
-/**
- * Excel row-г текст болгох
- */
 export function rowToText(row: Record<string, unknown>): string {
   return Object.entries(row)
     .map(([key, value]) => `${key}: ${String(value)}`)  // String() руу шууд convert
     .join(', ');
 }
 
-/**
- * Текстийг vector болгох - ЭНГИЙН МАТЕМАТИК
- * AI огт хэрэггүй, 100% үнэгүй
- */
+
 export function getEmbedding(text: string): number[] {
   const dimensions = 384; // Pinecone free tier dimension
   const embedding = new Array(dimensions).fill(0);
   
-  // Текстийн character-үүдийн давтамж тооцоолох
+  
   for (let i = 0; i < text.length; i++) {
     const charCode = text.charCodeAt(i);
     const index = charCode % dimensions;
