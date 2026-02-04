@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       .delete({
         where: { id: id },
       })
-      .catch((_e) => console.log("User already deleted")); // ✅ Засагдсан: 'e' -> '_e'
+      .catch((_e: unknown) => console.log("User already deleted")); // ✅ Засагдсан: 'e' -> '_e'
   }
 
   return NextResponse.json({ success: true });
