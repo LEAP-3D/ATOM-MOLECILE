@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Sparkles, Users, Briefcase, GraduationCap } from "lucide-react"
+import { motion } from "framer-motion";
+import { Sparkles, Users, Briefcase, GraduationCap } from "lucide-react";
 
 const audiences = [
   {
@@ -24,7 +24,7 @@ const audiences = [
     title: "Students",
     description: "Elevate your research and presentations",
   },
-]
+];
 
 export function IntroSection() {
   return (
@@ -71,7 +71,7 @@ export function IntroSection() {
             className="grid sm:grid-cols-2 gap-4"
           >
             {audiences.map((audience, index) => {
-              const Icon = audience.icon
+              const Icon = audience.icon;
               return (
                 <motion.div
                   key={audience.title}
@@ -96,11 +96,11 @@ export function IntroSection() {
                     </div>
                   </div>
                 </motion.div>
-              )
+              );
             })}
           </motion.div>
         </div>
       </div>
     </section>
-  )
+  );
 }

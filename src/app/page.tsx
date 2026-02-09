@@ -1,4 +1,4 @@
-import { HeroSection } from "./_components/landing/hero-section";
+import { HeroSection } from "./_components/landing/hero/hero-section";
 import { ChartMarquee } from "./_components/landing/chart-marquee";
 import { IntroSection } from "./_components/landing/intro-section";
 import { FeaturesSection } from "./_components/landing/features-section";

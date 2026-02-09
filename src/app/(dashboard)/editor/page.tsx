@@ -12,7 +12,7 @@ import {
   ChartSuggestions,
   type ChartSuggestion,
 } from "@/app/_components/editor/chart-suggestions";
-import { LiveChartPreview } from "@/app/_components/editor/live-chart-preview";
+import { LiveChartPreview } from "../../_components/editor/live-chart-preview";
 import { useChartSuggestions } from "@/app/_hooks/useChartSuggestions";
 
 export default function EditorPage() {
