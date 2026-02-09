@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "../ui/button";
+import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export function HeroSection() {
   return (
@@ -45,7 +46,7 @@ export function HeroSection() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/20 rounded-full blur-3xl"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-accent/20 rounded-full blur-3xl"
         />
 
         {/* Grid Pattern */}
@@ -87,7 +88,7 @@ export function HeroSection() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-balance"
           >
             Turn Raw Data into{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-primary via-secondary to-accent">
               Interactive Stories
             </span>
           </motion.h1>
@@ -111,17 +112,34 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/sign-up">
-              <Button
-                size="lg"
-                className="group relative overflow-hidden bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 text-primary-foreground px-8"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Get Started Free
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Button>
-            </Link>
+            <SignedOut>
+              <SignUpButton mode="modal">
+                <Button
+                  size="lg"
+                  className="group relative overflow-hidden bg-linear-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 text-primary-foreground px-8"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Get Started Free
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Button>
+              </SignUpButton>
+            </SignedOut>
+
+            <SignedIn>
+              <Link href="/dashboard">
+                <Button
+                  size="lg"
+                  className="group relative overflow-hidden bg-linear-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 text-primary-foreground px-8"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    Go to Dashboard
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Button>
+              </Link>
+            </SignedIn>
+
             <Link href="#examples">
               <Button
                 size="lg"
