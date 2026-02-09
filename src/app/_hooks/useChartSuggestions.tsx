@@ -1,0 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import type { UploadedFile } from "@/app/_components/editor/excel-upload";
+import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
+import { analyzeData } from "@/app/_lib/analyze-data";
+
+export function useChartSuggestions(activeFile: UploadedFile | null) {
+  const [suggestions, setSuggestions] = useState<ChartSuggestion[]>([]);
+  const [selectedSuggestion, setSelectedSuggestion] =
+    useState<ChartSuggestion | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    if (!activeFile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSuggestions([]);
+      setSelectedSuggestion(null);
+      setIsGenerating(false);
+      return;
+    }
+
+    setIsGenerating(true);
+
+    const timeout = setTimeout(() => {
+      const newSuggestions = analyzeData(activeFile);
+      setSuggestions(newSuggestions);
+      setSelectedSuggestion(newSuggestions[0] ?? null);
+      setIsGenerating(false);
+    }, 1500);
+
+    return () => clearTimeout(timeout);
+  }, [activeFile]);
+
+  return {
+    suggestions,
+    selectedSuggestion,
+    setSelectedSuggestion,
+    isGenerating,
+  };
+}
