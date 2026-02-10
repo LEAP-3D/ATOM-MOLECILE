@@ -31,15 +31,15 @@ export function ChartTypeCard({
     >
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
         <div
-          className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-10`}
+          className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-10`}
         />
       </div>
 
       <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div
-          className={`absolute inset-[-1px] rounded-xl bg-gradient-to-r ${gradient} opacity-50`}
+          className={`absolute -inset-px rounded-xl bg-linear-to-r ${gradient} opacity-50`}
         />
-        <div className="absolute inset-[1px] rounded-xl bg-card" />
+        <div className="absolute inset-px rounded-xl bg-card" />
       </div>
 
       <div className="relative p-6">
@@ -49,7 +49,7 @@ export function ChartTypeCard({
 
         <div className="flex items-start gap-3 mb-3">
           <div
-            className={`p-2 rounded-lg bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform duration-300`}
+            className={`p-2 rounded-lg bg-linear-to-br ${gradient} group-hover:scale-110 transition-transform duration-300`}
           >
             <Icon className="h-5 w-5 text-primary-foreground" />
           </div>
@@ -61,7 +61,7 @@ export function ChartTypeCard({
 
         <Link href={`/editor?type=${chartType}`}>
           <Button
-            className={`w-full mt-4 bg-gradient-to-r ${gradient} hover:opacity-90 transition-opacity text-primary-foreground`}
+            className={`w-full mt-4 bg-linear-to-r ${gradient} hover:opacity-90 transition-opacity text-primary-foreground`}
           >
             Create {name}
           </Button>
