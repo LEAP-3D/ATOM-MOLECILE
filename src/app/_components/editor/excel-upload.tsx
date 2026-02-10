@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import axios from "axios";
 import * as XLSX from "xlsx";
-
-// Components
 import { Notification } from "./upload-notification";
 import { Dropzone } from "./file-drop";
 import { UploadedFileItem } from "./uploaded-file-item";
@@ -20,16 +19,20 @@ export type UploadedFile = {
 
 type ExcelUploadProps = {
   files: UploadedFile[];
+  selectedFileIds: Set<string>;
   onUpload: (file: UploadedFile) => void;
   onRemove: (id: string) => void;
   onView: (file: UploadedFile) => void;
+  onFileToggle: (fileId: string) => void;
 };
 
 export function ExcelUpload({
   files,
+  selectedFileIds,
   onUpload,
   onRemove,
   onView,
+  onFileToggle,
 }: ExcelUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -66,7 +69,7 @@ export function ExcelUpload({
 
       // 3) Uploaded file объект үүсгэх
       const uploadedFile: UploadedFile = {
-        id: res.data.fileId || crypto.randomUUID(), // Server-аас ирсэн ID ашиглах
+        id: res.data.fileId || crypto.randomUUID(),
         name: file.name,
         uploadDate: new Date(),
         data: jsonData,
@@ -79,8 +82,8 @@ export function ExcelUpload({
       const errorMsg = axios.isAxiosError(err)
         ? err.response?.data?.error || "Сервер талд алдаа гарлаа"
         : err instanceof Error
-          ? err.message
-          : "Тодорхойгүй алдаа гарлаа";
+        ? err.message
+        : "Тодорхойгүй алдаа гарлаа";
       setMessage(errorMsg);
       console.error("Upload error:", err);
     } finally {
@@ -101,20 +104,42 @@ export function ExcelUpload({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-2"
+            className="space-y-3"
           >
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">
               Бүртгэгдсэн файлууд ({files.length})
             </p>
-            <div className="space-y-2 max-h-64 overflow-y-auto">
-              {files.map((file) => (
-                <UploadedFileItem
-                  key={file.id}
-                  file={file}
-                  onView={onView}
-                  onRemove={onRemove}
-                />
-              ))}
+
+            <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto pr-1">
+              {files.map((file) => {
+                const isSelected = selectedFileIds.has(file.id);
+
+                return (
+                  <motion.div
+                    key={file.id}
+                    onClick={() => onFileToggle(file.id)}
+                    whileTap={{ scale: 0.99 }}
+                    className={cn(
+                      "relative cursor-pointer rounded-xl border-2 transition-all duration-200 outline-none",
+                      isSelected
+                        ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                        : "border-border hover:border-muted-foreground/30 bg-card"
+                    )}
+                  >
+                    <div className="p-1">
+                      <UploadedFileItem
+                        file={file}
+                        onView={(f) => {
+                          onView(f);
+                        }}
+                        onRemove={(id) => {
+                          onRemove(id);
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         )}

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/purity */
 "use client";
 
 import React, { useState } from "react";
@@ -31,6 +30,7 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
   ];
 
   const randomPlaceholder =
+    // eslint-disable-next-line react-hooks/purity
     placeholderTexts[Math.floor(Math.random() * placeholderTexts.length)];
 
   return (
@@ -44,7 +44,9 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder={disabled ? "Эхлээд файл сонгоно уу..." : randomPlaceholder}
+          placeholder={
+            disabled ? "Эхлээд файл сонгоно уу..." : randomPlaceholder
+          }
           disabled={isLoading || disabled}
           rows={4}
           className="w-full px-4 py-3 pr-12 rounded-xl border border-border bg-background/50 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 resize-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
@@ -65,7 +67,7 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
             type="submit"
             size="icon"
             disabled={!message.trim() || isLoading || disabled}
-            className="h-9 w-9 rounded-lg bg-gradient-to-r from-primary to-secondary hover:opacity-90 disabled:opacity-50 shadow-lg"
+            className="h-9 w-9 rounded-lg bg-linear-to-r from-primary to-secondary hover:opacity-90 disabled:opacity-50 shadow-lg"
           >
             {isLoading ? (
               <motion.div
@@ -88,9 +90,7 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
           className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400"
         >
           <AlertCircle className="h-3 w-3" />
-          <span>
-            Chart үүсгэхийн тулд зүүн талаас файл сонгоно уу
-          </span>
+          <span>Chart үүсгэхийн тулд файл сонгоно уу</span>
         </motion.div>
       )}
 

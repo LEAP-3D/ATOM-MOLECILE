@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 import { ProfileSettingsCard } from "./profile-settings-card";
 import { SavedChartsSection } from "./saved-charts-section";
 import { UploadedFilesSection } from "./uploaded-files-section";
+import { useFileManagement } from "@/app/_hooks/useFileManagement";
+import { useCallback, useState } from "react";
+import { DataPreviewModal } from "@/app/_components/editor/data-preview-modal";
+import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 
 const mockSavedCharts = [
   {
@@ -29,24 +33,14 @@ const mockSavedCharts = [
   },
 ];
 
-const mockUploadedFiles = [
-  {
-    id: "1",
-    name: "sales_data_2024.xlsx",
-    uploadedAt: new Date("2024-01-15"),
-    rows: 1250,
-    columns: 8,
-  },
-  {
-    id: "2",
-    name: "customer_analytics.xlsx",
-    uploadedAt: new Date("2024-01-10"),
-    rows: 3420,
-    columns: 12,
-  },
-];
-
 export default function ProfilePage() {
+  const { files, handleUpload, handleRemove } = useFileManagement();
+  const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const handleView = useCallback((file: UploadedFile) => {
+    setPreviewFile(file);
+    setIsPreviewOpen(true);
+  }, []);
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       <motion.div
@@ -85,7 +79,17 @@ export default function ProfilePage() {
           className="lg:col-span-2 space-y-6"
         >
           <SavedChartsSection charts={mockSavedCharts} />
-          <UploadedFilesSection files={mockUploadedFiles} />
+          <UploadedFilesSection
+            files={files}
+            onUpload={handleUpload}
+            onRemove={handleRemove}
+            onView={handleView}
+          />
+          <DataPreviewModal
+            file={previewFile}
+            isOpen={isPreviewOpen}
+            onClose={() => setIsPreviewOpen(false)}
+          />
         </motion.div>
       </div>
     </div>

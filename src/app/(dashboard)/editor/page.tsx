@@ -13,7 +13,6 @@ import {
   type ChartSuggestion,
 } from "@/app/_components/editor/chart-suggestions";
 import { LiveChartPreview } from "@/app/_components/editor/live-chart-preview";
-import { FileSelection } from "@/app/_components/editor/file-selection";
 import { useChartSuggestions } from "@/app/_hooks/useChartSuggestions";
 import { useFileManagement } from "@/app/_hooks/useFileManagement";
 import { useChartGeneration } from "@/app/_hooks/useChartGeneration";
@@ -25,7 +24,6 @@ export default function EditorPage() {
   const {
     files,
     selectedFileIds,
-    isLoadingFiles,
     handleUpload,
     handleRemove,
     handleFileToggle,
@@ -60,7 +58,9 @@ export default function EditorPage() {
 
   const handleAxisChange = useCallback(
     (xAxis: string, yAxis: string) => {
-      setSelectedSuggestion((prev) => (prev ? { ...prev, xAxis, yAxis } : prev));
+      setSelectedSuggestion((prev) =>
+        prev ? { ...prev, xAxis, yAxis } : prev
+      );
     },
     [setSelectedSuggestion]
   );
@@ -81,16 +81,11 @@ export default function EditorPage() {
           <div className="space-y-3">
             <ExcelUpload
               files={files}
+              selectedFileIds={selectedFileIds}
+              onFileToggle={handleFileToggle}
               onUpload={handleUpload}
               onRemove={handleRemove}
               onView={handleView}
-            />
-
-            <FileSelection
-              files={files}
-              selectedFileIds={selectedFileIds}
-              onFileToggle={handleFileToggle}
-              isLoading={isLoadingFiles}
             />
           </div>
 
