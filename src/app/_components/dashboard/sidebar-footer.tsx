@@ -4,20 +4,25 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Sun, Moon, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 type SidebarFooterProps = {
   isCollapsed: boolean;
 };
 
 export function SidebarFooter({ isCollapsed }: SidebarFooterProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // ⚠️ hydration-safe check
-  if (!resolvedTheme) return null;
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+
+  // ✅ SSR + эхний client render: яг ижил HTML
+  if (!mounted) {
+    return <div className="p-3 border-t border-border/50 space-y-1" />;
+  }
 
   const isDark = resolvedTheme === "dark";
-
   return (
     <div className="p-3 border-t border-border/50 space-y-1">
       {/* Theme toggle */}

@@ -21,7 +21,7 @@ export function UploadedFileItem({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.2 }}
-      className="flex items-center gap-3 p-3 rounded-lg border bg-card group"
+      className="flex items-center gap-3 p-3 rounded-lg bg-card group"
     >
       <div className="p-2 rounded-lg bg-green-500/10">
         <FileSpreadsheet className="h-4 w-4 text-green-500" />
