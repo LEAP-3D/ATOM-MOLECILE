@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       workbook.Sheets[workbook.SheetNames[0]]
     ) as Record<string, unknown>[];
 
-    // console.log(`📊 ${jsonData.length} мөр уншигдлаа`);
+    console.log(`📊 ${jsonData.length} мөр уншигдлаа`);
 
     const savedFile = await prisma.uploadedFile.create({
       data: {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // console.log(`✅ Supabase хадгалагдлаа: ${savedFile.id}`);
+    console.log(`✅ Supabase хадгалагдлаа: ${savedFile.id}`);
 
     try {
       const apiKey = process.env.PINECONE_API_KEY;
@@ -60,8 +60,6 @@ export async function POST(req: Request) {
       for (let i = 0; i < jsonData.length; i++) {
         const row = jsonData[i];
         const text = rowToText(row);
-
-        // console.log(`📝 Мөр ${i + 1}: ${text.substring(0, 50)}...`);
 
         const embedding = getHashEmbedding(text);
 
@@ -149,7 +147,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       message: "Амжилттай хадгалагдлаа",
-      id: savedFile.id.toString(),
+      fileId: savedFile.id.toString(), // 🆕 ЭНИЙГ НЭМЛЭЭ - frontend дээр file tracking хийхэд хэрэгтэй
       rowCount: jsonData.length,
     });
   } catch (error: unknown) {
