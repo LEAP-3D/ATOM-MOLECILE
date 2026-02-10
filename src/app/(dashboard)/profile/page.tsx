@@ -63,13 +63,7 @@ export default function ProfilePage() {
           transition={{ delay: 0.1 }}
           className="lg:col-span-1"
         >
-          <ProfileSettingsCard
-            initialName="John Doe"
-            email="john.doe@example.com"
-            onSave={async () => {
-              await new Promise((r) => setTimeout(r, 1000));
-            }}
-          />
+          <ProfileSettingsCard />
         </motion.div>
 
         <motion.div
