@@ -12,13 +12,24 @@ import {
   ChartSuggestions,
   type ChartSuggestion,
 } from "@/app/_components/editor/chart-suggestions";
-import { LiveChartPreview } from "../../_components/editor/live-chart-preview";
+import { LiveChartPreview } from "@/app/_components/editor/live-chart-preview";
+import { FileSelection } from "@/app/_components/editor/file-selection";
 import { useChartSuggestions } from "@/app/_hooks/useChartSuggestions";
+import { useFileManagement } from "@/app/_hooks/useFileManagement";
+import { useChartGeneration } from "@/app/_hooks/useChartGeneration";
 
 export default function EditorPage() {
-  const [files, setFiles] = useState<UploadedFile[]>([]);
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const {
+    files,
+    selectedFileIds,
+    isLoadingFiles,
+    handleUpload,
+    handleRemove,
+    handleFileToggle,
+  } = useFileManagement();
 
   const activeFile = files[files.length - 1] ?? null;
 
@@ -29,21 +40,15 @@ export default function EditorPage() {
     isGenerating,
   } = useChartSuggestions(activeFile);
 
-  const handleUpload = useCallback((file: UploadedFile) => {
-    setFiles((prev) => [...prev, file]);
-  }, []);
-
-  const handleRemove = useCallback((id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
-  }, []);
+  const { isChatLoading, handleChatSubmit } = useChartGeneration(
+    files,
+    selectedFileIds,
+    setSelectedSuggestion
+  );
 
   const handleView = useCallback((file: UploadedFile) => {
     setPreviewFile(file);
     setIsPreviewOpen(true);
-  }, []);
-
-  const handleChatSubmit = useCallback((message: string) => {
-    console.log("Chat message:", message);
   }, []);
 
   const handleSuggestionSelect = useCallback(
@@ -55,15 +60,14 @@ export default function EditorPage() {
 
   const handleAxisChange = useCallback(
     (xAxis: string, yAxis: string) => {
-      setSelectedSuggestion((prev) =>
-        prev ? { ...prev, xAxis, yAxis } : prev
-      );
+      setSelectedSuggestion((prev) => (prev ? { ...prev, xAxis, yAxis } : prev));
     },
     [setSelectedSuggestion]
   );
 
   return (
     <div className="h-screen flex">
+      {/* LEFT SIDEBAR */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -74,16 +78,31 @@ export default function EditorPage() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          <ExcelUpload
-            files={files}
-            onUpload={handleUpload}
-            onRemove={handleRemove}
-            onView={handleView}
+          <div className="space-y-3">
+            <ExcelUpload
+              files={files}
+              onUpload={handleUpload}
+              onRemove={handleRemove}
+              onView={handleView}
+            />
+
+            <FileSelection
+              files={files}
+              selectedFileIds={selectedFileIds}
+              onFileToggle={handleFileToggle}
+              isLoading={isLoadingFiles}
+            />
+          </div>
+
+          <ChatInput
+            onSubmit={handleChatSubmit}
+            isLoading={isChatLoading}
+            disabled={selectedFileIds.size === 0}
           />
-          <ChatInput onSubmit={handleChatSubmit} disabled={!activeFile} />
         </div>
       </motion.div>
 
+      {/* CENTER - CHART PREVIEW */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -98,11 +117,12 @@ export default function EditorPage() {
           <LiveChartPreview
             file={activeFile}
             suggestion={selectedSuggestion}
-            isLoading={isGenerating}
+            isLoading={isGenerating || isChatLoading}
           />
         </div>
       </motion.div>
 
+      {/* RIGHT SIDEBAR - SUGGESTIONS */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -118,6 +138,7 @@ export default function EditorPage() {
         />
       </motion.div>
 
+      {/* DATA PREVIEW MODAL */}
       <DataPreviewModal
         file={previewFile}
         isOpen={isPreviewOpen}

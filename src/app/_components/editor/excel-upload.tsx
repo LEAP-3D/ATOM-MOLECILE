@@ -10,7 +10,6 @@ import { Notification } from "./upload-notification";
 import { Dropzone } from "./file-drop";
 import { UploadedFileItem } from "./uploaded-file-item";
 
-// It's good practice to move shared types to a separate file, e.g., `types.ts`
 export type UploadedFile = {
   id: string;
   name: string;
@@ -36,8 +35,8 @@ export function ExcelUpload({
   const [message, setMessage] = useState("");
 
   const processFile = async (file: File) => {
-    if (!file.name.endsWith(".xlsx")) {
-      setMessage("Зөвхөн .xlsx файл сонгоно уу");
+    if (!file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+      setMessage("Зөвхөн .xlsx эсвэл .xls файл сонгоно уу");
       return;
     }
 
@@ -45,11 +44,13 @@ export function ExcelUpload({
     setMessage("");
 
     try {
+      // 1) Server рүү upload хийх (Prisma + Pinecone)
       const formData = new FormData();
       formData.append("files", file);
       const res = await axios.post("/api/routes/upload", formData);
       const serverMsg = res.data.message || "Амжилттай хадгалагдлаа!";
 
+      // 2) Excel файлыг уншиж, өгөгдлийг задлах
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: "array" });
       const sheetName = workbook.SheetNames[0];
@@ -63,8 +64,9 @@ export function ExcelUpload({
         throw new Error("Excel файл хоосон байна");
       }
 
+      // 3) Uploaded file объект үүсгэх
       const uploadedFile: UploadedFile = {
-        id: crypto.randomUUID(),
+        id: res.data.fileId || crypto.randomUUID(), // Server-аас ирсэн ID ашиглах
         name: file.name,
         uploadDate: new Date(),
         data: jsonData,
@@ -83,7 +85,7 @@ export function ExcelUpload({
       console.error("Upload error:", err);
     } finally {
       setIsUploading(false);
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => setMessage(""), 4000);
     }
   };
 
@@ -102,16 +104,18 @@ export function ExcelUpload({
             className="space-y-2"
           >
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Бүртгэгдсэн файлууд
+              Бүртгэгдсэн файлууд ({files.length})
             </p>
-            {files.map((file) => (
-              <UploadedFileItem
-                key={file.id}
-                file={file}
-                onView={onView}
-                onRemove={onRemove}
-              />
-            ))}
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {files.map((file) => (
+                <UploadedFileItem
+                  key={file.id}
+                  file={file}
+                  onView={onView}
+                  onRemove={onRemove}
+                />
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
