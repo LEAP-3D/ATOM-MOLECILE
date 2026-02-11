@@ -83,10 +83,10 @@ export default function DashboardPage() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {[
-          { label: "Charts Created", value: "0" },
-          { label: "Files Uploaded", value: "0" },
-          { label: "Saved Templates", value: "0" },
-          { label: "Recent Views", value: "0" },
+          { label: "Charts Created", value: "111" },
+          { label: "Files Uploaded", value: "023232" },
+          { label: "Saved Templates", value: "0000000" },
+          { label: "Recent Views", value: "69966969" },
         ].map((stat) => (
           <div
             key={stat.label}
