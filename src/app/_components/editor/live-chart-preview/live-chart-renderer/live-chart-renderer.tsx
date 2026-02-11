@@ -11,7 +11,6 @@ import {
 } from "recharts";
 import type { ChartSuggestion } from "../../chart-suggestions";
 import type { UploadedFile } from "../../excel-upload";
-
 import { BarChartView } from "./bar-chart-view";
 import { LineChartView } from "./line-chart-view";
 import { AreaChartView } from "./area-chart-view";

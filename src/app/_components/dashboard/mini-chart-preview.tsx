@@ -16,7 +16,7 @@ export function MiniChartPreview({ chartType, gradient }: Props) {
               initial={{ height: 0 }}
               animate={{ height: `${height}%` }}
               transition={{ delay: i * 0.1, duration: 0.5, ease: "easeOut" }}
-              className={`w-6 rounded-t bg-gradient-to-t ${gradient}`}
+              className={`w-6 rounded-t bg-linear-to-t ${gradient}`}
             />
           ))}
         </div>
@@ -135,7 +135,7 @@ export function MiniChartPreview({ chartType, gradient }: Props) {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: i * 0.1, duration: 0.3 }}
-              className={`absolute w-3 h-3 rounded-full bg-gradient-to-br ${gradient}`}
+              className={`absolute w-3 h-3 rounded-full bg-linear-to-br bg-amber-300 ${gradient}`}
               style={{ left: `${point.x}%`, top: `${point.y}%` }}
             />
           ))}
@@ -148,7 +148,7 @@ export function MiniChartPreview({ chartType, gradient }: Props) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className={`w-16 h-12 rounded bg-gradient-to-br ${gradient} opacity-30`}
+            className={`w-16 h-12 rounded bg-linear-to-br ${gradient} opacity-30`}
           />
           {[
             { x: 20, y: 30 },
@@ -160,7 +160,7 @@ export function MiniChartPreview({ chartType, gradient }: Props) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.3 + i * 0.1, duration: 0.3 }}
-              className={`absolute w-2 h-2 rounded-full bg-gradient-to-br ${gradient}`}
+              className={`absolute w-2 h-2 rounded-full bg-linear-to-br ${gradient}`}
               style={{ left: `${point.x}%`, top: `${point.y}%` }}
             />
           ))}
@@ -169,7 +169,7 @@ export function MiniChartPreview({ chartType, gradient }: Props) {
     default:
       return (
         <div
-          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${gradient} opacity-50`}
+          className={`w-12 h-12 rounded-lg bg-linear-to-br ${gradient} opacity-50`}
         />
       );
   }
