@@ -6,13 +6,6 @@ import { ArrowRight, Play } from "lucide-react";
 import { Button } from "../../ui/button";
 import { SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
-const stats = [
-  { value: "10K+", label: "Active Users" },
-  { value: "50K+", label: "Charts Created" },
-  { value: "15+", label: "Chart Types" },
-  { value: "99.9%", label: "Uptime" },
-];
-
 export function HeroContent() {
   return (
     <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
@@ -103,31 +96,6 @@ export function HeroContent() {
               View Examples
             </Button>
           </Link>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto"
-        >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.5 + index * 0.1 }}
-              className="text-center"
-            >
-              <div className="text-2xl sm:text-3xl font-bold gradient-text">
-                {stat.value}
-              </div>
-              <div className="text-sm text-muted-foreground mt-1">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
         </motion.div>
       </div>
     </div>

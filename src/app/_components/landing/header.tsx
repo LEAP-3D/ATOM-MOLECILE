@@ -35,11 +35,17 @@ export default function LandingHeader() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
+      // className={cn(
+      //   "fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-16 flex items-center",
+      //   isScrolled
+      //     ? "glass-strong bg-transparent shadow-lg shadow-primary/5"
+      //     : "bg-transparent",
+      // )}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-16 flex items-center",
+        "left-0 right-0 z-50 transition-all duration-300 h-16 flex items-center",
         isScrolled
-          ? "glass-strong bg-transparent shadow-lg shadow-primary/5"
-          : "bg-transparent"
+          ? "fixed top-0 glass-strong bg-transparent backdrop-blur shadow-lg shadow-primary/5"
+          : "relative bg-transparent",
       )}
     >
       <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 bg-transparent">
