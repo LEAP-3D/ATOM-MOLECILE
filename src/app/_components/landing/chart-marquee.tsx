@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 import {
   BarChart3,
   LineChart,
@@ -10,7 +10,7 @@ import {
   Map,
   TrendingUp,
   Activity,
-} from "lucide-react"
+} from "lucide-react";
 
 const chartTypes = [
   {
@@ -34,13 +34,13 @@ const chartTypes = [
   {
     name: "Pie Chart",
     icon: PieChart,
-    color: "from-chart-4 to-chart-4/50",
+    color: "from-secondary to-chart-4/50",
     description: "Display proportions",
   },
   {
     name: "Scatter Plot",
     icon: ScatterChart,
-    color: "from-chart-5 to-chart-5/50",
+    color: "from-primary to-chart-5/50",
     description: "Reveal correlations",
   },
   {
@@ -61,14 +61,10 @@ const chartTypes = [
     color: "from-accent to-primary",
     description: "Live data streams",
   },
-]
+];
 
-function ChartCard({
-  chart,
-}: {
-  chart: (typeof chartTypes)[0]
-}) {
-  const Icon = chart.icon
+function ChartCard({ chart }: { chart: (typeof chartTypes)[0] }) {
+  const Icon = chart.icon;
 
   return (
     <motion.div
@@ -102,12 +98,12 @@ function ChartCard({
         <div className="absolute inset-[-1px] rounded-xl bg-gradient-to-r from-primary via-secondary to-accent opacity-50 blur-sm" />
       </div>
     </motion.div>
-  )
+  );
 }
 
 export function ChartMarquee() {
   // Duplicate for seamless loop
-  const duplicatedCharts = [...chartTypes, ...chartTypes]
+  const duplicatedCharts = [...chartTypes, ...chartTypes];
 
   return (
     <section id="examples" className="py-20 overflow-hidden">
@@ -119,12 +115,11 @@ export function ChartMarquee() {
           className="text-center"
         >
           <h2 className="text-3xl sm:text-4xl font-bold">
-            Visualize Your Data,{" "}
-            <span className="gradient-text">Your Way</span>
+            Visualize Your Data, <span className="gradient-text">Your Way</span>
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose from a wide variety of chart types to perfectly represent your
-            data story
+            Choose from a wide variety of chart types to perfectly represent
+            your data story
           </p>
         </motion.div>
       </div>
@@ -172,5 +167,5 @@ export function ChartMarquee() {
         </div>
       </div>
     </section>
-  )
+  );
 }
