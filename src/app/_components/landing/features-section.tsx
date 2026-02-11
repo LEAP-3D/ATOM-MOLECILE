@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 import {
   Upload,
   Sparkles,
@@ -8,7 +8,7 @@ import {
   History,
   Sun,
   Zap,
-} from "lucide-react"
+} from "lucide-react";
 
 const features = [
   {
@@ -37,14 +37,14 @@ const features = [
     title: "Save & Revisit History",
     description:
       "All your created charts and uploaded files are automatically saved. Access your visualization history anytime.",
-    gradient: "from-chart-4 to-chart-4/50",
+    gradient: "from-accent to-accent/50",
   },
   {
     icon: Sun,
     title: "Dark & Light Optimized",
     description:
       "Every chart is designed to look stunning in both dark and light modes, ensuring perfect visuals in any environment.",
-    gradient: "from-chart-5 to-chart-5/50",
+    gradient: "from-primary to-primary/50",
   },
   {
     icon: Zap,
@@ -53,7 +53,7 @@ const features = [
       "Built with modern technology for blazing fast rendering, even with large datasets containing thousands of rows.",
     gradient: "from-primary to-secondary",
   },
-]
+];
 
 export function FeaturesSection() {
   return (
@@ -84,7 +84,7 @@ export function FeaturesSection() {
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => {
-            const Icon = feature.icon
+            const Icon = feature.icon;
             return (
               <motion.div
                 key={feature.title}
@@ -125,10 +125,10 @@ export function FeaturesSection() {
                   </p>
                 </div>
               </motion.div>
-            )
+            );
           })}
         </div>
       </div>
     </section>
-  )
+  );
 }
