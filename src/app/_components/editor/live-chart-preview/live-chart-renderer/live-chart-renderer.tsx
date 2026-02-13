@@ -61,6 +61,16 @@ export function LiveChartRenderer({
   });
   const chartData = normalizedData.map(({ name, value }) => ({ name, value }));
   const scatterData = normalizedData.map(({ name, x, y }) => ({ name, x, y }));
+  const pieData =
+    chartData.length > 0 && chartData.every((point) => point.value === 0)
+      ? Object.entries(
+          chartData.reduce<Record<string, number>>((acc, item) => {
+            const key = item.name || "Unknown";
+            acc[key] = (acc[key] ?? 0) + 1;
+            return acc;
+          }, {})
+        ).map(([name, value]) => ({ name, value }))
+      : chartData;
   const hasNumericX =
     scatterData.length > 0 &&
     scatterData.every((point) => typeof point.x === "number");
@@ -108,7 +118,7 @@ export function LiveChartRenderer({
       case "pie":
         return (
           <PieChartView
-            data={chartData}
+            data={pieData}
             colors={COLORS}
             tooltipStyle={tooltipStyle}
           />

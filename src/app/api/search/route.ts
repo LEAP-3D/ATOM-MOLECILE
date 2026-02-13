@@ -6,7 +6,7 @@ import { getHashEmbedding } from "@/lib/embeddings.simple";
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Нэвтрээгүй байна" }, { status: 401 });
     }
@@ -24,62 +24,61 @@ export async function POST(req: Request) {
 
     const apiKey = process.env.PINECONE_API_KEY;
     const indexHost = process.env.PINECONE_INDEX_HOST;
-    
+
     if (!apiKey || !indexHost) {
-      throw new Error('Pinecone тохиргоо дутуу байна');
+      throw new Error("Pinecone тохиргоо дутуу байна");
     }
 
     // Direct HTTP API ашиглан хайлт хийх
-    const filterObj = fileId 
-      ? { fileId: { $eq: fileId } } 
+    const filterObj = fileId
+      ? { fileId: { $eq: fileId } }
       : { userId: { $eq: userId } };
 
     const response = await fetch(`https://${indexHost}/query`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Api-Key': apiKey,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        "Api-Key": apiKey,
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify({
         vector: queryEmbedding,
         topK: topK,
         includeMetadata: true,
         filter: filterObj,
-        namespace: '',
+        namespace: "",
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Pinecone хайлт алдаа: ${response.status} - ${errorText}`);
+      throw new Error(
+        `Pinecone хайлт алдаа: ${response.status} - ${errorText}`
+      );
     }
 
     const searchResults = await response.json();
 
-    const results = searchResults.matches?.map((match: {
-      score: number;
-      metadata?: Record<string, unknown>;
-    }) => ({
-      score: match.score,
-      text: match.metadata?.text,
-      rowIndex: match.metadata?.rowIndex,
-      fileId: match.metadata?.fileId,
-      data: match.metadata,
-    })) || [];
+    const results =
+      searchResults.matches?.map(
+        (match: { score: number; metadata?: Record<string, unknown> }) => ({
+          score: match.score,
+          text: match.metadata?.text,
+          rowIndex: match.metadata?.rowIndex,
+          fileId: match.metadata?.fileId,
+          data: match.metadata,
+        })
+      ) || [];
 
     return NextResponse.json({
       success: true,
       query,
       results,
     });
-
   } catch (error) {
     console.error("❌ Хайлт хийх алдаа:", error);
-    const errorMessage = error instanceof Error ? error.message : "Хайлт хийх үед алдаа гарлаа";
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Хайлт хийх үед алдаа гарлаа";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
