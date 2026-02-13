@@ -1,77 +1,79 @@
 // app/api/routes/generate-chart/route.ts
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { prepareDataContext } from "./utils/prepare-context";
-import { createChartPrompt } from "./utils/create-prompt";
-import { generateChartWithAI } from "./utils/huggingface-api";
-import { parseChartConfig, validateChartConfig } from "./utils/validate-config";
-
+import { createQueryEmbedding } from "./utils/query-embedding";
+import { searchPinecone } from "./utils/pinecone-search";
+import { fetchFilesFromSupabase } from "./utils/fetch-files";
+import { prepareDataContext } from "./utils/prepare-data-context";
+import { createGrokPrompt } from "./utils/create-grok-prompt";
+import { callGroqAPI } from "./utils/call-groq-api"; // ⭐ ЭНЭ
+import { parseAndValidateChartConfig } from "./utils/parse-chart-config";
 
 export async function POST(req: Request) {
-  console.log("🚀 /api/routes/generate-chart POST called");
+  console.log("🚀 /api/routes/generate-chart POST - RAG Flow");
 
   try {
-    // ================= AUTH =================
     const { userId } = await auth();
-    console.log("👤 Auth userId:", userId);
-
     if (!userId) {
-      return NextResponse.json({ error: "Нэвтрээгүй байна" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Нэвтрээгүй байна" },
+        { status: 401 }
+      );
     }
 
-    // ================= BODY =================
-    const { query, filesData } = await req.json();
-    console.log("📝 Query:", query);
-    console.log("📁 Files count:", filesData?.length);
+    const { query } = await req.json();
+    console.log("📝 User query:", query);
 
-    if (!query || !filesData || filesData.length === 0) {
+    if (!query) {
       return NextResponse.json(
-        { error: "Query болон файлын мэдээлэл шаардлагатай" },
+        { error: "Query шаардлагатай" },
         { status: 400 }
       );
     }
 
-    // ================= ENV =================
-    const HF_API_KEY = process.env.HUGGINGFACE_API_KEY;
-    console.log("🔑 HF API KEY exists:", Boolean(HF_API_KEY));
+    const GROQ_API_KEY = process.env.GROQ_API_KEY; // ⭐ ЭНЭ
+    const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
+    const PINECONE_INDEX_HOST = process.env.PINECONE_INDEX_HOST;
 
-    if (!HF_API_KEY) {
+    if (!GROQ_API_KEY || !PINECONE_API_KEY || !PINECONE_INDEX_HOST) {
       return NextResponse.json(
-        { error: "HUGGINGFACE_API_KEY тохируулаагүй байна" },
+        { error: "API keys тохируулаагүй байна" },
         { status: 500 }
       );
     }
 
-    // ================= PREPARE DATA =================
-    const dataContext = prepareDataContext(filesData);
+    const queryEmbedding = await createQueryEmbedding(query);
+    const fileIds = await searchPinecone(
+      queryEmbedding,
+      userId,
+      PINECONE_API_KEY,
+      PINECONE_INDEX_HOST
+    );
+    const formattedFiles = await fetchFilesFromSupabase(fileIds, userId);
+    const dataContext = prepareDataContext(query, formattedFiles);
+    const prompt = createGrokPrompt(dataContext);
 
-    // ================= CREATE PROMPT =================
-    const prompt = createChartPrompt(query, dataContext);
+    const generatedText = await callGroqAPI(prompt, GROQ_API_KEY); // ⭐ ЭНЭ
 
-    console.log("🤖 Sending request to Hugging Face...");
-
-    // ================= CALL AI =================
-    const generatedText = await generateChartWithAI(prompt, HF_API_KEY);
-
-    // ================= PARSE & VALIDATE =================
-    let chartConfig = parseChartConfig(generatedText, filesData);
-    console.log("✅ Parsed chart config:", chartConfig);
-
-    chartConfig = validateChartConfig(chartConfig, filesData);
-    console.log("✅ Final validated chartConfig:", chartConfig);
+    const chartConfig = parseAndValidateChartConfig(
+      generatedText,
+      formattedFiles
+    );
 
     return NextResponse.json({
       success: true,
       chartConfig,
+      filesData: formattedFiles,
       debug: {
-        rawResponse: generatedText,
-        filesAnalyzed: filesData.length,
+        query,
+        pineconeMatches: fileIds.size,
+        filesFound: formattedFiles.length,
+        selectedFile: formattedFiles[chartConfig.fileIndex].name,
       },
     });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("🔥 Generate chart error:", error);
-
     return NextResponse.json(
       {
         error: error.message ?? "Chart генерацлахад алдаа гарлаа",

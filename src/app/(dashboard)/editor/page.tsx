@@ -20,6 +20,9 @@ import { useChartGeneration } from "@/app/_hooks/useChartGeneration";
 export default function EditorPage() {
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  
+  // ⭐ RAG-аас ирсэн active file
+  const [activeFileFromRAG, setActiveFileFromRAG] = useState<UploadedFile | null>(null);
 
   const {
     files,
@@ -29,7 +32,8 @@ export default function EditorPage() {
     handleFileToggle,
   } = useFileManagement();
 
-  const activeFile = files[files.length - 1] ?? null;
+  // Active file: RAG-аас ирсэн эсвэл хамгийн сүүлийнх
+  const activeFile = activeFileFromRAG ?? files[files.length - 1] ?? null;
 
   const {
     suggestions,
@@ -38,10 +42,11 @@ export default function EditorPage() {
     isGenerating,
   } = useChartSuggestions(activeFile);
 
+  // ⭐ RAG Flow: files болон setActiveFile дамжуулах
   const { isChatLoading, handleChatSubmit } = useChartGeneration(
     files,
-    selectedFileIds,
-    setSelectedSuggestion
+    setSelectedSuggestion,
+    setActiveFileFromRAG
   );
 
   const handleView = useCallback((file: UploadedFile) => {
@@ -92,7 +97,7 @@ export default function EditorPage() {
           <ChatInput
             onSubmit={handleChatSubmit}
             isLoading={isChatLoading}
-            disabled={selectedFileIds.size === 0}
+            disabled={files.length === 0} // ⚠️ Файл байхгүй бол disabled
           />
         </div>
       </motion.div>
@@ -108,12 +113,14 @@ export default function EditorPage() {
           <h2 className="font-semibold text-lg">Chart Preview</h2>
         </div>
 
-        <div className="flex-1 overflow-hidden">
+         <div className="flex-1 p-6">  {/* h-[500px] устгаад flex-1 болгох */}
+    <div className="w-full h-full min-h-[400px]">  {/* h-full нэмэх */}
           <LiveChartPreview
             file={activeFile}
             suggestion={selectedSuggestion}
             isLoading={isGenerating || isChatLoading}
           />
+        </div>
         </div>
       </motion.div>
 
