@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 // import { parseChartConfig, validateChartConfig } from "./utils/validate-config";
 import { refineChartSqlWithGemini } from "./utils/gemini-refiner";
 
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 type GeminiResponseType = {
   chartType: string;
@@ -50,6 +50,7 @@ function assertSafeSelect(
 }
 
 export async function POST(req: Request) {
+  const supabaseAdmin = getSupabaseAdmin();
   try {
     const { userId } = await auth();
     if (!userId)
