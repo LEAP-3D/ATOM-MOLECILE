@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
 import { analyzeData } from "@/app/_lib/analyze-data";
@@ -10,6 +10,14 @@ export function useChartSuggestions(activeFile: UploadedFile | null) {
   const [selectedSuggestion, setSelectedSuggestion] =
     useState<ChartSuggestion | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const upsertGeneratedSuggestion = useCallback((suggestion: ChartSuggestion) => {
+    setSuggestions((prev) => {
+      const filtered = prev.filter((item) => item.type !== suggestion.type);
+      return [suggestion, ...filtered];
+    });
+    setSelectedSuggestion(suggestion);
+  }, []);
 
   useEffect(() => {
     if (!activeFile) {
@@ -36,6 +44,7 @@ export function useChartSuggestions(activeFile: UploadedFile | null) {
     suggestions,
     selectedSuggestion,
     setSelectedSuggestion,
+    upsertGeneratedSuggestion,
     isGenerating,
   };
 }

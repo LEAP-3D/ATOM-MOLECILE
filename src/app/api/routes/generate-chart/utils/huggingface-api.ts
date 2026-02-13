@@ -40,7 +40,7 @@ export async function generateChartWithAI(
 
   const result = await response.json();
   console.log("✅ HF response:", JSON.stringify(result, null, 2));
-
+  console.log("responseeeeeeeeee", response);
   const generatedText = result.choices?.[0]?.message?.content ?? "";
   console.log("📝 Generated text:", generatedText);
 
