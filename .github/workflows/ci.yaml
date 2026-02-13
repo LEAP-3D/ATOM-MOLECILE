@@ -52,6 +52,7 @@ jobs:
       PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
       PINECONE_INDEX_HOST: ${{ secrets.PINECONE_INDEX_HOST }}
       HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
     steps:
       - name: Checkout repository
@@ -91,6 +92,7 @@ jobs:
       PINECONE_INDEX_NAME: ${{ secrets.PINECONE_INDEX_NAME }}
       PINECONE_INDEX_HOST: ${{ secrets.PINECONE_INDEX_HOST }}
       HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
     steps:
       - name: Checkout repository
