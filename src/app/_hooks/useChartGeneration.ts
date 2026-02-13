@@ -1,79 +1,66 @@
 // app/_hooks/useChartGeneration.ts
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
-import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
+import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
 
 export function useChartGeneration(
   files: UploadedFile[],
-  setSelectedSuggestion: (suggestion: ChartSuggestion | null) => void,
-  setActiveFile: (file: UploadedFile | null) => void
+  selectedFileIds: Set<string>,
+  setSelectedSuggestion: (suggestion: ChartSuggestion | null) => void
 ) {
   const [isChatLoading, setIsChatLoading] = useState(false);
 
-  const handleChatSubmit = async (message: string) => {
-    if (!message.trim()) return;
+  const handleChatSubmit = useCallback(
+    async (message: string) => {
+      if (selectedFileIds.size === 0) {
+        alert("Файл сонгоно уу");
+        return;
+      }
 
-    setIsChatLoading(true);
-    setSelectedSuggestion(null);
+      setIsChatLoading(true);
 
-    try {
-      console.log("📤 Sending query to backend...");
+      try {
+        const selectedFiles = files.filter((f) => selectedFileIds.has(f.id));
 
-      // ⭐ RAG Flow: зөвхөн query явуулна
-      const response = await axios.post("/api/routes/generate-chart", {
-        query: message,
-      });
+        const filesData = selectedFiles.map((file) => ({
+          name: file.name,
+          columns: file.columns,
+          data: file.data,
+        }));
 
-      console.log("✅ Backend response:", response.data);
+        console.log("📤 Sending to HF API:", { query: message, filesData });
 
-      if (response.data.success && response.data.chartConfig) {
-        const { chartConfig, filesData } = response.data;
+        const response = await axios.post("/api/routes/generate-chart", {
+          query: message,
+          filesData: filesData,
+        });
 
-        // Backend-ээс ирсэн filesData-г UploadedFile type руу хөрвүүлэх
-        const matchedFile = filesData.find(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (fd: any) => fd.name === filesData[chartConfig.fileIndex]?.name
-        );
+        if (response.data.success) {
+          const { chartConfig } = response.data;
 
-        if (matchedFile) {
-          const activeFile: UploadedFile = {
-            id: matchedFile.id,
-            name: matchedFile.name,
-            uploadDate: new Date(),
-            data: matchedFile.data,
-            columns: matchedFile.columns,
+          console.log("✅ Received chart config:", chartConfig);
+
+          const newSuggestion: ChartSuggestion = {
+            type: chartConfig.chartType,
+            title: chartConfig.title || "Generated Chart",
+            reason: chartConfig.description || "AI-generated visualization",
+            xAxis: chartConfig.xAxis,
+            yAxis: chartConfig.yAxis,
+            confidence: 0.9,
           };
 
-          // Active file-ыг тохируулах
-          setActiveFile(activeFile);
+          setSelectedSuggestion(newSuggestion);
         }
-
-        // Chart suggestion үүсгэх
-        const suggestion: ChartSuggestion = {
-          type: chartConfig.chartType,
-          xAxis: chartConfig.xAxis,
-          yAxis: chartConfig.yAxis,
-          title: chartConfig.title,
-          reason: "",
-          confidence: 0
-        };
-
-        setSelectedSuggestion(suggestion);
-
-        console.log("📊 Chart suggestion set:", suggestion);
-        console.log("📁 Active file set:", matchedFile?.name);
+      } catch (error) {
+        console.error("❌ Chart генерацлахад алдаа:", error);
+        alert("Chart үүсгэхэд алдаа гарлаа");
+      } finally {
+        setIsChatLoading(false);
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error("❌ Chart generation failed:", error);
-      
-      const errorMsg = error.response?.data?.error || error.message;
-      alert(`Chart үүсгэхэд алдаа гарлаа: ${errorMsg}`);
-    } finally {
-      setIsChatLoading(false);
-    }
-  };
+    },
+    [files, selectedFileIds, setSelectedSuggestion]
+  );
 
   return {
     isChatLoading,
