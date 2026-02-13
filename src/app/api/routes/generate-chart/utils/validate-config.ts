@@ -1,57 +1,56 @@
-// app/api/routes/generate-chart/utils/validate-config.ts
+// // app/api/routes/generate-chart/utils/validate-config.ts
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseChartConfig(generatedText: string, filesData: any[]) {
-  try {
-    let cleanedText = generatedText.trim();
-    cleanedText = cleanedText.replace(/```json\n?/g, "");
-    cleanedText = cleanedText.replace(/```\n?/g, "");
-    cleanedText = cleanedText.trim();
+// export function parseChartConfig(generatedText: string, filesData: any[]) {
+//   try {
+//     // Remove markdown code blocks if Gemini included them
+//     let cleanedText = generatedText
+//       .trim()
+//       .replace(/```json\n?/g, "")
+//       .replace(/```\n?/g, "")
+//       .trim();
 
-    return JSON.parse(cleanedText);
-  } catch (parseError) {
-    console.warn("⚠️ JSON parse failed:", parseError);
-    console.warn("Raw text:", generatedText);
+//     return JSON.parse(cleanedText);
+//   } catch (parseError) {
+//     console.warn("⚠️ JSON parse failed, returning fallback config");
+//     const firstFile = filesData[0];
+//     return {
+//       chartType: "bar",
+//       xAxis: firstFile?.columns[0] || "",
+//       yAxis: firstFile?.columns[1] || firstFile?.columns[0] || "",
+//       title: "Generated Chart",
+//       fileIndex: 0,
+//     };
+//   }
+// }
 
-    const firstFile = filesData[0];
-    return {
-      chartType: "bar",
-      xAxis: firstFile.columns[0],
-      yAxis: firstFile.columns[1] || firstFile.columns[0],
-      title: `${firstFile.columns[0]} vs ${firstFile.columns[1] || firstFile.columns[0]}`,
-      description: "Автомат үүсгэсэн chart (AI parse амжилтгүй)",
-      fileIndex: 0,
-    };
-  }
-}
+// export function validateChartConfig(chartConfig: any, filesData: any[]) {
+//   // Ensure fileIndex is a valid number within the array range
+//   let index = parseInt(chartConfig.fileIndex);
+//   if (isNaN(index) || index < 0 || index >= filesData.length) {
+//     index = 0;
+//   }
+//   chartConfig.fileIndex = index;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function validateChartConfig(chartConfig: any, filesData: any[]) {
-  const fileIndex = chartConfig.fileIndex ?? 0;
-  const selectedFile = filesData[fileIndex];
+//   const validFile = filesData[index];
 
-  if (!selectedFile) {
-    console.error("❌ Invalid fileIndex:", fileIndex);
-    chartConfig.fileIndex = 0;
-  }
+//   // CRITICAL FIX: Check if validFile exists before accessing .columns
+//   if (!validFile || !validFile.columns) {
+//     throw new Error("Мэдээллийн сан эсвэл баганын мэдээлэл олдсонгүй.");
+//   }
 
-  const validFile = filesData[chartConfig.fileIndex];
+//   // Validate columns
+//   if (!validFile.columns.includes(chartConfig.xAxis)) {
+//     chartConfig.xAxis = validFile.columns[0];
+//   }
 
-  if (!validFile.columns.includes(chartConfig.xAxis)) {
-    console.warn(`⚠️ xAxis "${chartConfig.xAxis}" not found. Using first column.`);
-    chartConfig.xAxis = validFile.columns[0];
-  }
+//   if (!validFile.columns.includes(chartConfig.yAxis)) {
+//     chartConfig.yAxis = validFile.columns[1] || validFile.columns[0];
+//   }
 
-  if (!validFile.columns.includes(chartConfig.yAxis)) {
-    console.warn(`⚠️ yAxis "${chartConfig.yAxis}" not found. Using second column.`);
-    chartConfig.yAxis = validFile.columns[1] || validFile.columns[0];
-  }
+//   const validTypes = ["bar", "line", "pie", "area", "scatter"];
+//   if (!validTypes.includes(chartConfig.chartType)) {
+//     chartConfig.chartType = "bar";
+//   }
 
-  const validTypes = ["bar", "line", "pie", "area", "scatter"];
-  if (!validTypes.includes(chartConfig.chartType)) {
-    console.warn(`⚠️ Invalid chart type: ${chartConfig.chartType}`);
-    chartConfig.chartType = "bar";
-  }
-
-  return chartConfig;
-}
+//   return chartConfig;
+// }

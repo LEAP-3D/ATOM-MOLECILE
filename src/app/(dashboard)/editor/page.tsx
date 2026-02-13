@@ -35,13 +35,14 @@ export default function EditorPage() {
     suggestions,
     selectedSuggestion,
     setSelectedSuggestion,
+    upsertGeneratedSuggestion,
     isGenerating,
   } = useChartSuggestions(activeFile);
 
   const { isChatLoading, handleChatSubmit } = useChartGeneration(
     files,
     selectedFileIds,
-    setSelectedSuggestion
+    upsertGeneratedSuggestion
   );
 
   const handleView = useCallback((file: UploadedFile) => {

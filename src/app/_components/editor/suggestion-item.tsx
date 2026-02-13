@@ -28,7 +28,7 @@ export function SuggestionItem({
   isSelected,
   onSelect,
 }: SuggestionItemProps) {
-  const Icon = chartIcons[suggestion.type];
+  const Icon = chartIcons[suggestion.type as keyof typeof chartIcons] ?? BarChart3;
 
   return (
     <motion.button
@@ -38,7 +38,7 @@ export function SuggestionItem({
         "w-full text-left p-4 rounded-xl transition-all duration-200 border",
         isSelected
           ? "glass neon-border shadow-lg"
-          : "bg-muted/30 hover:bg-muted/50 border-transparent",
+          : "bg-muted/30 hover:bg-muted/50 border-transparent"
       )}
     >
       <div className="flex items-center justify-between">

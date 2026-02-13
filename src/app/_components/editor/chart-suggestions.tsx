@@ -3,14 +3,15 @@ import type { UploadedFile } from "./excel-upload";
 
 import { EmptyState } from "./empty-state";
 import { SuggestionItem } from "./suggestion-item";
-import { AxisSelector } from "./axis-selector";
+// import { AxisSelector } from "./axis-selector";
 
 export type ChartSuggestion = {
-  type: "bar" | "line" | "area" | "pie" | "scatter";
+  type: string;
   title: string;
   reason: string;
-  xAxis?: string;
-  yAxis?: string;
+  xAxis: string;
+  yAxis: string;
+  data?: Record<string, unknown>[];
   confidence: number;
 };
 
@@ -27,8 +28,8 @@ export function ChartSuggestions({
   suggestions,
   selectedSuggestion,
   onSelect,
-  onAxisChange,
-}: ChartSuggestionsProps) {
+}: // onAxisChange,
+ChartSuggestionsProps) {
   // Render Empty State: No file uploaded
   if (!file) {
     return (
@@ -72,13 +73,13 @@ export function ChartSuggestions({
         ))}
       </div>
 
-      {selectedSuggestion && file && (
+      {/* {selectedSuggestion && file && (
         <AxisSelector
           file={file}
           selectedSuggestion={selectedSuggestion}
           onAxisChange={onAxisChange}
         />
-      )}
+      )} */}
     </div>
   );
 }

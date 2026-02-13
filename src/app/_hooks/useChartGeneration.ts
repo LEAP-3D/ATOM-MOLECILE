@@ -4,10 +4,18 @@ import axios from "axios";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
 
+function normalizeChartType(type: unknown): ChartSuggestion["type"] {
+  const raw = String(type ?? "").toLowerCase();
+  if (["bar", "line", "area", "pie", "scatter"].includes(raw)) return raw;
+  if (raw === "column") return "bar";
+  if (raw === "donut" || raw === "doughnut") return "pie";
+  return "bar";
+}
+
 export function useChartGeneration(
   files: UploadedFile[],
   selectedFileIds: Set<string>,
-  setSelectedSuggestion: (suggestion: ChartSuggestion | null) => void
+  onSuggestionGenerated: (suggestion: ChartSuggestion) => void
 ) {
   const [isChatLoading, setIsChatLoading] = useState(false);
 
@@ -35,22 +43,34 @@ export function useChartGeneration(
           query: message,
           filesData: filesData,
         });
-
+        console.log("📥 Received response from HF API:", response.data);
         if (response.data.success) {
-          const { chartConfig } = response.data;
+          // backend-ээс ирж буй өгөгдлийг шууд response.data-аас авна
+          const data = response.data;
 
-          console.log("✅ Received chart config:", chartConfig);
+          console.log("✅ Received data:", data);
+          const chartData: Record<string, unknown>[] = Array.isArray(
+            data.chartData
+          )
+            ? data.chartData
+            : [];
+          const firstRow =
+            chartData.length > 0
+              ? (chartData[0] as Record<string, unknown>)
+              : null;
+          const rowKeys = firstRow ? Object.keys(firstRow) : [];
 
           const newSuggestion: ChartSuggestion = {
-            type: chartConfig.chartType,
-            title: chartConfig.title || "Generated Chart",
-            reason: chartConfig.description || "AI-generated visualization",
-            xAxis: chartConfig.xAxis,
-            yAxis: chartConfig.yAxis,
+            type: normalizeChartType(data.chartType),
+            title: data.title || "Generated Chart",
+            reason: data.description || "AI-generated visualization",
+            xAxis: data.xAxisKey || rowKeys[0] || "",
+            yAxis: data.yAxisKey || rowKeys[1] || "",
             confidence: 0.9,
+            data: chartData,
           };
 
-          setSelectedSuggestion(newSuggestion);
+          onSuggestionGenerated(newSuggestion);
         }
       } catch (error) {
         console.error("❌ Chart генерацлахад алдаа:", error);
@@ -59,7 +79,7 @@ export function useChartGeneration(
         setIsChatLoading(false);
       }
     },
-    [files, selectedFileIds, setSelectedSuggestion]
+    [files, selectedFileIds, onSuggestionGenerated]
   );
 
   return {

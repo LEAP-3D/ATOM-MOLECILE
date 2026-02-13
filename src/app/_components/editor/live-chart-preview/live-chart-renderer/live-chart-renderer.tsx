@@ -31,10 +31,39 @@ export function LiveChartRenderer({
   file: UploadedFile;
   suggestion: ChartSuggestion;
 }) {
-  const chartData = file.data.slice(0, 50).map((row) => ({
-    name: String(row[suggestion.xAxis!]),
-    value: Number(row[suggestion.yAxis!]) || 0,
-  }));
+  const sourceRows =
+    suggestion.data && suggestion.data.length > 0
+      ? suggestion.data
+      : file.data;
+
+  const normalizedData = sourceRows.slice(0, 50).map((row) => {
+    const typedRow = row as Record<string, unknown>;
+    const fallbackKeys = Object.keys(typedRow);
+    const xKey = suggestion.xAxis || fallbackKeys[0] || "name";
+    const yKey = suggestion.yAxis || fallbackKeys[1] || "value";
+    const xRaw = typedRow[xKey] ?? typedRow[fallbackKeys[0]] ?? "";
+    const yRaw = typedRow[yKey] ?? typedRow[fallbackKeys[1]] ?? 0;
+    const parsedX = Number(xRaw);
+    const parsedY = Number(yRaw);
+    const numericX =
+      xRaw !== "" &&
+      xRaw !== null &&
+      xRaw !== undefined &&
+      Number.isFinite(parsedX);
+    const numericY = Number.isFinite(parsedY) ? parsedY : 0;
+
+    return {
+      name: String(xRaw),
+      value: numericY,
+      x: numericX ? parsedX : String(xRaw),
+      y: numericY,
+    };
+  });
+  const chartData = normalizedData.map(({ name, value }) => ({ name, value }));
+  const scatterData = normalizedData.map(({ name, x, y }) => ({ name, x, y }));
+  const hasNumericX =
+    scatterData.length > 0 &&
+    scatterData.every((point) => typeof point.x === "number");
 
   const margin = { top: 20, right: 30, left: 20, bottom: 60 };
 
@@ -88,22 +117,22 @@ export function LiveChartRenderer({
       case "scatter":
         // scatter-аа энэ файл дээрээ үлдээнэ
         return (
-          <ScatterChart data={chartData} margin={margin}>
+          <ScatterChart data={scatterData} margin={margin}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis
-              type="category"
-              dataKey="name"
+              type={hasNumericX ? "number" : "category"}
+              dataKey={hasNumericX ? "x" : "name"}
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
             <YAxis
               type="number"
-              dataKey="value"
+              dataKey="y"
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
             <Tooltip contentStyle={tooltipStyle} />
-            <Scatter name="Data" data={chartData} fill={COLORS[4]} />
+            <Scatter name="Data" data={scatterData} fill={COLORS[4]} />
           </ScatterChart>
         );
 
