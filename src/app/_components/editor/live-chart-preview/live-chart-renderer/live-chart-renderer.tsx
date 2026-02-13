@@ -24,9 +24,6 @@ const COLORS = [
   "hsl(var(--chart-5))",
 ];
 
-type ChartData = { name: string; value: number };
-type ScatterData = { x: number; y: number; name: string };
-
 export function LiveChartRenderer({
   file,
   suggestion,
@@ -34,13 +31,10 @@ export function LiveChartRenderer({
   file: UploadedFile;
   suggestion: ChartSuggestion;
 }) {
-  if (!suggestion.xAxis || !suggestion.yAxis) {
-    return (
-      <div className="flex items-center justify-center h-[400px] text-muted-foreground">
-        Тэнхлэгийн мэдээлэл дутуу байна
-      </div>
-    );
-  }
+  const chartData = file.data.slice(0, 50).map((row) => ({
+    name: String(row[suggestion.xAxis!]),
+    value: Number(row[suggestion.yAxis!]) || 0,
+  }));
 
   const margin = { top: 20, right: 30, left: 20, bottom: 60 };
 
@@ -50,59 +44,7 @@ export function LiveChartRenderer({
     borderRadius: "8px",
   } as const;
 
-  // Scatter-д зориулсан тусдаа data
-  if (suggestion.type === "scatter") {
-    const scatterData: ScatterData[] = file.data
-      .slice(0, 50)
-      .map((row) => ({
-        x: Number(row[suggestion.xAxis!]) || 0,
-        y: Number(row[suggestion.yAxis!]) || 0,
-        name: String(row[suggestion.xAxis!]),
-      }));
-
-    return (
-      <div className="w-full h-full min-h-[400px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={margin}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis
-              type="number"
-              dataKey="x"
-              name={suggestion.xAxis}
-              stroke="hsl(var(--muted-foreground))"
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
-            />
-            <YAxis
-              type="number"
-              dataKey="y"
-              name={suggestion.yAxis}
-              stroke="hsl(var(--muted-foreground))"
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
-            />
-            <Tooltip
-              contentStyle={tooltipStyle}
-              cursor={{ strokeDasharray: "3 3" }}
-            />
-            <Scatter
-              name={suggestion.title || "Өгөгдөл"}
-              data={scatterData}
-              fill={COLORS[4]}
-            />
-          </ScatterChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-
-  // Бусад chart-уудад зориулсан data
-  const chartData: ChartData[] = file.data
-    .slice(0, 50)
-    .map((row) => ({
-      name: String(row[suggestion.xAxis!]),
-      value: Number(row[suggestion.yAxis!]) || 0,
-    }));
-
-  const renderChart = () => {
+  const chart = (() => {
     switch (suggestion.type) {
       case "bar":
         return (
@@ -143,20 +85,36 @@ export function LiveChartRenderer({
           />
         );
 
-      default:
+      case "scatter":
+        // scatter-аа энэ файл дээрээ үлдээнэ
         return (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            Дэмжигдээгүй график төрөл: {suggestion.type}
-          </div>
+          <ScatterChart data={chartData} margin={margin}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis
+              type="category"
+              dataKey="name"
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+            />
+            <YAxis
+              type="number"
+              dataKey="value"
+              stroke="hsl(var(--muted-foreground))"
+              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+            />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Scatter name="Data" data={chartData} fill={COLORS[4]} />
+          </ScatterChart>
         );
+
+      default:
+        return null;
     }
-  };
+  })();
 
   return (
-    <div className="w-full h-full min-h-[400px]">
-      <ResponsiveContainer width="100%" height="100%">
-        {renderChart()}
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height="100%">
+      {chart}
+    </ResponsiveContainer>
   );
 }
