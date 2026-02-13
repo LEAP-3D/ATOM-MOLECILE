@@ -4,7 +4,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function refineChartSqlWithGemini(
   tableName: string,
-  query: string,
+  ImprovedQuery: string,
   columns: string[],
   fileName: string,
   userId: string
@@ -19,11 +19,11 @@ export async function refineChartSqlWithGemini(
 
   const safeFile = fileName.replace(/'/g, "''");
   const safeUser = userId.replace(/'/g, "''");
-
+  console.log("ImprovedQuery from refiner", ImprovedQuery);
   const prompt = `
 You are an SQL aggregation assistant for PostgreSQL.
 
-User request: "${query}"
+User request: "${ImprovedQuery}"
 
 Database table: ${tableName}
 

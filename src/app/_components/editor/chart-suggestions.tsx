@@ -62,7 +62,7 @@ ChartSuggestionsProps) {
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 p-2">
         {suggestions.map((suggestion) => (
           <SuggestionItem
             key={suggestion.type}

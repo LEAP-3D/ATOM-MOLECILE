@@ -6,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { refineChartSqlWithGemini } from "./utils/gemini-refiner";
 
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { improveUserPromptWithGemini } from "./utils/gemini-prompt";
 
 type GeminiResponseType = {
   chartType: string;
@@ -29,7 +30,9 @@ function assertSafeSelect(
   _userId: string
 ) {
   const s = sql.trim().toLowerCase();
-  if (!s.startsWith("select")) throw new Error("Only SELECT allowed");
+  if (!/^(select|with)\b/.test(s))
+    throw new Error("Only SELECT/WITH SELECT allowed");
+  if (!/\bselect\b/.test(s)) throw new Error("Only SELECT queries allowed");
   if (
     /(insert|update|delete|drop|alter|create|truncate|grant|revoke)\b/.test(s)
   )
@@ -86,10 +89,12 @@ export async function POST(req: Request) {
       );
     }
 
+    const ImprovedQuery = await improveUserPromptWithGemini(query);
+    console.log("✨ Improved query:", ImprovedQuery);
     // // ✅ Gemini-д fileName + userId-г өгч, SQL-д WHERE filter force хийнэ
     const rawGemini = await refineChartSqlWithGemini(
       tableName,
-      query,
+      ImprovedQuery.normalized_query,
       columns,
       fileName,
       userId

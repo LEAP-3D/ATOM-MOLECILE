@@ -5,8 +5,16 @@ import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
 
 function normalizeChartType(type: unknown): ChartSuggestion["type"] {
-  const raw = String(type ?? "").toLowerCase();
+  const raw = String(type ?? "")
+    .toLowerCase()
+    .replace(/[_-]/g, " ")
+    .trim();
   if (["bar", "line", "area", "pie", "scatter"].includes(raw)) return raw;
+  if (raw.includes("pie")) return "pie";
+  if (raw.includes("scatter")) return "scatter";
+  if (raw.includes("area")) return "area";
+  if (raw.includes("line")) return "line";
+  if (raw.includes("bar") || raw.includes("column")) return "bar";
   if (raw === "column") return "bar";
   if (raw === "donut" || raw === "doughnut") return "pie";
   return "bar";
