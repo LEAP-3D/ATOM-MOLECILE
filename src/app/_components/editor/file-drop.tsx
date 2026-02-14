@@ -40,7 +40,7 @@ export function Dropzone({ onFileProcess, isUploading }: DropzoneProps) {
         await onFileProcess(e.dataTransfer.files[0]);
       }
     },
-    [onFileProcess],
+    [onFileProcess]
   );
 
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +62,7 @@ export function Dropzone({ onFileProcess, isUploading }: DropzoneProps) {
         isDragging
           ? "border-primary bg-primary/5 scale-[1.02]"
           : "border-border hover:border-primary/50 hover:bg-muted/30",
-        isUploading && "opacity-50 pointer-events-none",
+        isUploading && "opacity-50 pointer-events-none"
       )}
     >
       <input
@@ -84,7 +84,7 @@ export function Dropzone({ onFileProcess, isUploading }: DropzoneProps) {
             <Upload
               className={cn(
                 "h-6 w-6 transition-colors",
-                isDragging ? "text-primary" : "text-muted-foreground",
+                isDragging ? "text-primary" : "text-muted-foreground"
               )}
             />
           )}
@@ -92,11 +92,11 @@ export function Dropzone({ onFileProcess, isUploading }: DropzoneProps) {
         <div>
           <p className="text-sm font-medium">
             {isUploading
-              ? "Сервер рүү илгээж байна..."
-              : "Excel файлаа энд чирч оруулна уу"}
+              ? "Uploading..."
+              : "Drag and drop your Excel file here"}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            эсвэл сонгох бол энд дарна уу (.xlsx)
+            or click here to select a file (.xlsx)
           </p>
         </div>
       </motion.div>

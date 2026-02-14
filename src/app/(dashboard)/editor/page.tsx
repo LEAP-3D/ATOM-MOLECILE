@@ -8,12 +8,8 @@ import {
 } from "@/app/_components/editor/excel-upload";
 import { DataPreviewModal } from "@/app/_components/editor/data-preview-modal";
 import { ChatInput } from "@/app/_components/editor/chat-input";
-import {
-  ChartSuggestions,
-  type ChartSuggestion,
-} from "@/app/_components/editor/chart-suggestions";
+import { ChartSuggestions } from "@/app/_components/editor/chart-suggestions/ChartSuggestions";
 import { LiveChartPreview } from "@/app/_components/editor/live-chart-preview";
-import { useChartSuggestions } from "@/app/_hooks/useChartSuggestions";
 import { useFileManagement } from "@/app/_hooks/useFileManagement";
 import { useChartGeneration } from "@/app/_hooks/useChartGeneration";
 
@@ -32,38 +28,26 @@ export default function EditorPage() {
   const activeFile = files[files.length - 1] ?? null;
 
   const {
-    suggestions,
-    selectedSuggestion,
-    setSelectedSuggestion,
-    upsertGeneratedSuggestion,
-    isGenerating,
-  } = useChartSuggestions(activeFile);
-
-  const { isChatLoading, handleChatSubmit } = useChartGeneration(
-    files,
-    selectedFileIds,
-    upsertGeneratedSuggestion
-  );
+    isChatLoading,
+    latestResult,
+    selectedChartType,
+    setSelectedChartType,
+    generateChart,
+  } = useChartGeneration();
 
   const handleView = useCallback((file: UploadedFile) => {
     setPreviewFile(file);
     setIsPreviewOpen(true);
   }, []);
 
-  const handleSuggestionSelect = useCallback(
-    (suggestion: ChartSuggestion) => {
-      setSelectedSuggestion(suggestion);
-    },
-    [setSelectedSuggestion]
-  );
-
-  const handleAxisChange = useCallback(
-    (xAxis: string, yAxis: string) => {
-      setSelectedSuggestion((prev) =>
-        prev ? { ...prev, xAxis, yAxis } : prev
+  const handleChatSubmit = useCallback(
+    async (message: string) => {
+      const selectedFiles = files.filter((file) =>
+        selectedFileIds.has(file.id)
       );
+      return generateChart(message, selectedFiles);
     },
-    [setSelectedSuggestion]
+    [files, selectedFileIds, generateChart]
   );
 
   return (
@@ -112,8 +96,9 @@ export default function EditorPage() {
         <div className="flex-1 overflow-hidden">
           <LiveChartPreview
             file={activeFile}
-            suggestion={selectedSuggestion}
-            isLoading={isGenerating || isChatLoading}
+            result={latestResult}
+            selectedChartType={selectedChartType}
+            isLoading={isChatLoading}
           />
         </div>
       </motion.div>
@@ -127,10 +112,10 @@ export default function EditorPage() {
       >
         <ChartSuggestions
           file={activeFile}
-          suggestions={suggestions}
-          selectedSuggestion={selectedSuggestion}
-          onSelect={handleSuggestionSelect}
-          onAxisChange={handleAxisChange}
+          recommendedCharts={latestResult?.recommendedCharts}
+          selectedChartType={selectedChartType}
+          onSelectChartType={setSelectedChartType}
+          isLoading={isChatLoading}
         />
       </motion.div>
 

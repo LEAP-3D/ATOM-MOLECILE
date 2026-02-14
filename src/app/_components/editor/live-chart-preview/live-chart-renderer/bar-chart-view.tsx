@@ -17,7 +17,7 @@ type Props = {
   margin: { top: number; right: number; left: number; bottom: number };
 };
 
-export function BarChartView({ data, colors, tooltipStyle, margin }: Props) {
+export function BarChartView({ data, colors, margin }: Props) {
   return (
     <BarChart data={data} margin={margin}>
       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -33,7 +33,15 @@ export function BarChartView({ data, colors, tooltipStyle, margin }: Props) {
         stroke="hsl(var(--muted-foreground))"
         tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
       />
-      <Tooltip contentStyle={tooltipStyle} />
+      <Tooltip
+        contentStyle={{
+          backgroundColor: "#1c1c1c",
+          border: "1px solid ##dbdbdb",
+          borderRadius: "10px",
+        }}
+        itemStyle={{ color: "#ffffff" }}
+        labelStyle={{ color: "#ffffff" }}
+      />
       <Bar dataKey="value" radius={[4, 4, 0, 0]}>
         {data.map((_, index) => (
           <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

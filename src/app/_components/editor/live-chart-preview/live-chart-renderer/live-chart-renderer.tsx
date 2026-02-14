@@ -9,8 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ChartSuggestion } from "../../chart-suggestions";
-import type { UploadedFile } from "../../excel-upload";
+import type { ChartType } from "../../chart-suggestions/chart-types";
 import { BarChartView } from "./bar-chart-view";
 import { LineChartView } from "./line-chart-view";
 import { AreaChartView } from "./area-chart-view";
@@ -25,22 +24,21 @@ const COLORS = [
 ];
 
 export function LiveChartRenderer({
-  file,
-  suggestion,
+  chartType,
+  chartData: sourceChartData,
+  xAxisKey,
+  yAxisKey,
 }: {
-  file: UploadedFile;
-  suggestion: ChartSuggestion;
+  chartType: ChartType;
+  chartData: Record<string, unknown>[];
+  xAxisKey?: string;
+  yAxisKey?: string;
 }) {
-  const sourceRows =
-    suggestion.data && suggestion.data.length > 0
-      ? suggestion.data
-      : file.data;
-
-  const normalizedData = sourceRows.slice(0, 50).map((row) => {
+  const normalizedData = sourceChartData.slice(0, 50).map((row) => {
     const typedRow = row as Record<string, unknown>;
     const fallbackKeys = Object.keys(typedRow);
-    const xKey = suggestion.xAxis || fallbackKeys[0] || "name";
-    const yKey = suggestion.yAxis || fallbackKeys[1] || "value";
+    const xKey = xAxisKey || fallbackKeys[0] || "name";
+    const yKey = yAxisKey || fallbackKeys[1] || "value";
     const xRaw = typedRow[xKey] ?? typedRow[fallbackKeys[0]] ?? "";
     const yRaw = typedRow[yKey] ?? typedRow[fallbackKeys[1]] ?? 0;
     const parsedX = Number(xRaw);
@@ -59,18 +57,22 @@ export function LiveChartRenderer({
       y: numericY,
     };
   });
-  const chartData = normalizedData.map(({ name, value }) => ({ name, value }));
+  const simpleChartData = normalizedData.map(({ name, value }) => ({
+    name,
+    value,
+  }));
   const scatterData = normalizedData.map(({ name, x, y }) => ({ name, x, y }));
   const pieData =
-    chartData.length > 0 && chartData.every((point) => point.value === 0)
+    simpleChartData.length > 0 &&
+    simpleChartData.every((point) => point.value === 0)
       ? Object.entries(
-          chartData.reduce<Record<string, number>>((acc, item) => {
+          simpleChartData.reduce<Record<string, number>>((acc, item) => {
             const key = item.name || "Unknown";
             acc[key] = (acc[key] ?? 0) + 1;
             return acc;
           }, {})
         ).map(([name, value]) => ({ name, value }))
-      : chartData;
+      : simpleChartData;
   const hasNumericX =
     scatterData.length > 0 &&
     scatterData.every((point) => typeof point.x === "number");
@@ -84,11 +86,11 @@ export function LiveChartRenderer({
   } as const;
 
   const chart = (() => {
-    switch (suggestion.type) {
+    switch (chartType) {
       case "bar":
         return (
           <BarChartView
-            data={chartData}
+            data={simpleChartData}
             colors={COLORS}
             tooltipStyle={tooltipStyle}
             margin={margin}
@@ -98,7 +100,7 @@ export function LiveChartRenderer({
       case "line":
         return (
           <LineChartView
-            data={chartData}
+            data={simpleChartData}
             color={COLORS[1]}
             tooltipStyle={tooltipStyle}
             margin={margin}
@@ -108,7 +110,7 @@ export function LiveChartRenderer({
       case "area":
         return (
           <AreaChartView
-            data={chartData}
+            data={simpleChartData}
             color={COLORS[2]}
             tooltipStyle={tooltipStyle}
             margin={margin}

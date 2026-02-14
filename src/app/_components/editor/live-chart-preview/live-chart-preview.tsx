@@ -1,26 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { ChartSuggestion } from "../chart-suggestions";
+import type { ChartType } from "../chart-suggestions/chart-types";
 import type { UploadedFile } from "../excel-upload";
 import { LiveChartLoading } from "./live-chart-loading";
 import { LiveChartEmpty } from "./live-chart-empty";
 import { LiveChartRenderer } from "./live-chart-renderer/live-chart-renderer";
+import type { LatestChartResult } from "@/app/_hooks/useChartGeneration";
 
 type LiveChartPreviewProps = {
   file: UploadedFile | null;
-  suggestion: ChartSuggestion | null;
+  result: LatestChartResult | null;
+  selectedChartType: ChartType | null;
   isLoading?: boolean;
 };
 
 export function LiveChartPreview({
   file,
-  suggestion,
+  result,
+  selectedChartType,
   isLoading,
 }: LiveChartPreviewProps) {
   if (isLoading) return <LiveChartLoading />;
 
-  if (!file || !suggestion || !suggestion.xAxis || !suggestion.yAxis) {
+  if (!file || !result || !selectedChartType || result.chartData.length === 0) {
     return <LiveChartEmpty hasFile={!!file} />;
   }
 
@@ -32,15 +35,18 @@ export function LiveChartPreview({
     >
       {/* Chart Title */}
       <div className="p-4 border-b border-border/50">
-        <h3 className="font-semibold">{suggestion.title}</h3>
-        <p className="text-sm text-muted-foreground">
-          {suggestion.xAxis} vs {suggestion.yAxis}
-        </p>
+        <h3 className="font-semibold">{result.title}</h3>
+        <p className="text-sm text-muted-foreground">{result.description}</p>
       </div>
 
       {/* Chart */}
       <div className="flex-1 p-4">
-        <LiveChartRenderer file={file} suggestion={suggestion} />
+        <LiveChartRenderer
+          chartType={selectedChartType}
+          chartData={result.chartData}
+          xAxisKey={result.xAxisKey}
+          yAxisKey={result.yAxisKey}
+        />
       </div>
     </motion.div>
   );

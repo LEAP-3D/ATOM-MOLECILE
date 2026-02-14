@@ -106,8 +106,11 @@ export function ExcelUpload({
             exit={{ opacity: 0, height: 0 }}
             className="space-y-3"
           >
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">
-              Бүртгэгдсэн файлууд ({files.length})
+            <p className="text-sm font-semibold text-foreground">
+              Uploaded Files
+              <span className="ml-2 text-muted-foreground font-normal">
+                ({files.length})
+              </span>
             </p>
 
             <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto pr-1">

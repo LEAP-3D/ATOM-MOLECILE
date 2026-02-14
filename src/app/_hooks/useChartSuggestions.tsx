@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
-import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
+import type { ChartSuggestion } from "../_components/editor/chart-suggestions/chart-types";
 import { analyzeData } from "@/app/_lib/analyze-data";
 
 export function useChartSuggestions(activeFile: UploadedFile | null) {
@@ -11,13 +11,16 @@ export function useChartSuggestions(activeFile: UploadedFile | null) {
     useState<ChartSuggestion | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const upsertGeneratedSuggestion = useCallback((suggestion: ChartSuggestion) => {
-    setSuggestions((prev) => {
-      const filtered = prev.filter((item) => item.type !== suggestion.type);
-      return [suggestion, ...filtered];
-    });
-    setSelectedSuggestion(suggestion);
-  }, []);
+  const upsertGeneratedSuggestion = useCallback(
+    (suggestion: ChartSuggestion) => {
+      setSuggestions((prev) => {
+        const filtered = prev.filter((item) => item.type !== suggestion.type);
+        return [suggestion, ...filtered];
+      });
+      setSelectedSuggestion(suggestion);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!activeFile) {
