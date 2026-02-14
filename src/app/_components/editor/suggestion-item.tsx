@@ -7,7 +7,7 @@ import {
   ScatterChart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ChartSuggestion } from "./chart-suggestions";
+import type { ChartSuggestion } from "./chart-suggestions/chart-types";
 
 const chartIcons = {
   bar: BarChart3,
@@ -28,7 +28,8 @@ export function SuggestionItem({
   isSelected,
   onSelect,
 }: SuggestionItemProps) {
-  const Icon = chartIcons[suggestion.type as keyof typeof chartIcons] ?? BarChart3;
+  const Icon =
+    chartIcons[suggestion.type as keyof typeof chartIcons] ?? BarChart3;
 
   return (
     <motion.button
@@ -51,7 +52,7 @@ export function SuggestionItem({
         </span>
       </div>
       <p className="mt-2 text-sm text-muted-foreground pl-9">
-        {suggestion.reason}
+        {/* {suggestion.reason} */}
       </p>
     </motion.button>
   );

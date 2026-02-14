@@ -1,12 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY_PROMPT!);
 
 type PromptImproverResponse = {
   normalized_query: string;
   description: string;
   recommended_charts: Array<{
-    type: "bar" | "pie" | "line" | "area" | "scatter";
+    type?: "bar" | "pie" | "line" | "area" | "scatter";
+    chart_type?: "bar" | "pie" | "line" | "area" | "scatter";
+    chartType?: "bar" | "pie" | "line" | "area" | "scatter";
     confidence: number; // 0..1
   }>;
 };

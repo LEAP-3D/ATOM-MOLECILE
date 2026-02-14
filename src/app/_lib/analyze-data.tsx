@@ -1,5 +1,5 @@
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
-import type { ChartSuggestion } from "@/app/_components/editor/chart-suggestions";
+import type { ChartSuggestion } from "../_components/editor/chart-suggestions/chart-types";
 
 export function analyzeData(file: UploadedFile): ChartSuggestion[] {
   const suggestions: ChartSuggestion[] = [];

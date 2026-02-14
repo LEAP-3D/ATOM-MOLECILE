@@ -19,7 +19,6 @@ export async function refineChartSqlWithGemini(
 
   const safeFile = fileName.replace(/'/g, "''");
   const safeUser = userId.replace(/'/g, "''");
-  console.log("ImprovedQuery from refiner", ImprovedQuery);
   const prompt = `
 You are an SQL aggregation assistant for PostgreSQL.
 
