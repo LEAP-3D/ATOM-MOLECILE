@@ -20,6 +20,7 @@ export default function EditorPage() {
   const {
     files,
     selectedFileIds,
+    isLoadingFiles,
     handleUpload,
     handleRemove,
     handleFileToggle,
@@ -67,6 +68,7 @@ export default function EditorPage() {
             <ExcelUpload
               files={files}
               selectedFileIds={selectedFileIds}
+              isLoadingFiles={isLoadingFiles}
               onFileToggle={handleFileToggle}
               onUpload={handleUpload}
               onRemove={handleRemove}

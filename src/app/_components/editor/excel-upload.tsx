@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import * as XLSX from "xlsx";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Notification } from "./upload-notification";
 import { Dropzone } from "./file-drop";
 import { UploadedFileItem } from "./uploaded-file-item";
@@ -20,6 +21,7 @@ export type UploadedFile = {
 type ExcelUploadProps = {
   files: UploadedFile[];
   selectedFileIds: Set<string>;
+  isLoadingFiles: boolean;
   onUpload: (file: UploadedFile) => void;
   onRemove: (id: string) => void;
   onView: (file: UploadedFile) => void;
@@ -29,6 +31,7 @@ type ExcelUploadProps = {
 export function ExcelUpload({
   files,
   selectedFileIds,
+  isLoadingFiles,
   onUpload,
   onRemove,
   onView,
@@ -92,6 +95,9 @@ export function ExcelUpload({
     }
   };
 
+  const showContainer = files.length > 0 || isLoadingFiles || isUploading;
+  const showInitialSkeletons = isLoadingFiles && files.length === 0;
+
   return (
     <div className="space-y-4">
       {message && <Notification message={message} />}
@@ -99,21 +105,28 @@ export function ExcelUpload({
       <Dropzone onFileProcess={processFile} isUploading={isUploading} />
 
       <AnimatePresence>
-        {files.length > 0 && (
+        {showContainer && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="space-y-3"
           >
-            <p className="text-sm font-semibold text-foreground">
-              Uploaded Files
-              <span className="ml-2 text-muted-foreground font-normal">
-                ({files.length})
-              </span>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">
+              Uploaded Files ({files.length})
             </p>
 
             <div className="grid grid-cols-1 gap-2 max-h-80 overflow-y-auto pr-1">
+              <AnimatePresence initial={false}>
+                {showInitialSkeletons &&
+                  Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton
+                      className="h-17 w-70 bg-muted/60 dark:bg-muted/40"
+                      key={`initial-skeleton-${index}`}
+                    />
+                  ))}
+              </AnimatePresence>
+
               {files.map((file) => {
                 const isSelected = selectedFileIds.has(file.id);
 
@@ -143,6 +156,12 @@ export function ExcelUpload({
                   </motion.div>
                 );
               })}
+
+              <AnimatePresence initial={false}>
+                {isUploading && (
+                  <Skeleton className="h-17 w-70 bg-muted/60 dark:bg-muted/40" />
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
