@@ -5,7 +5,9 @@ import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 
 export function useFileManagement() {
   const [files, setFiles] = useState<UploadedFile[]>([]);
-  const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(new Set());
+  const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(
+    new Set()
+  );
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
 
   // Fetch user files on mount
