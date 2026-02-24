@@ -3,6 +3,7 @@ import { type Metadata, type Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 // import Header from "./_features/Header";
 import { ThemeProvider } from "./_components/theme-providers";
@@ -86,6 +87,7 @@ export default function RootLayout({
             <div className="relative min-h-screen flex flex-col bg-white dark:bg-[#0f0f12] text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
               {/* <Header /> */}
               <main className="flex-1">{children}</main>
+              <Toaster richColors position="top-right" />
             </div>
           </ThemeProvider>
         </body>

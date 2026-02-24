@@ -24,8 +24,8 @@ export function LiveChartPreview({
 }: LiveChartPreviewProps) {
   if (isLoading) return <LiveChartLoading />;
 
-  if (!file || !result || !selectedChartType || result.chartData.length === 0) {
-    return <LiveChartEmpty hasFile={!!file} />;
+  if (!result || !selectedChartType || result.chartData.length === 0) {
+    return <LiveChartEmpty hasFile={!!file || !!result} />;
   }
 
   return (
