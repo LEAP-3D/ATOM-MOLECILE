@@ -34,7 +34,7 @@ const mockSavedCharts = [
 ];
 
 export default function ProfilePage() {
-  const { files, handleUpload, handleRemove } = useFileManagement();
+  const { files, handleRemove } = useFileManagement();
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const handleView = useCallback((file: UploadedFile) => {
@@ -75,7 +75,7 @@ export default function ProfilePage() {
           <SavedChartsSection charts={mockSavedCharts} />
           <UploadedFilesSection
             files={files}
-            onUpload={handleUpload}
+            // onUpload={handleUpload}
             onRemove={handleRemove}
             onView={handleView}
           />

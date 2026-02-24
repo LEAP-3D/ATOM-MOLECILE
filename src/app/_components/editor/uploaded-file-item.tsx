@@ -5,8 +5,8 @@ import type { UploadedFile } from "./excel-upload";
 
 type UploadedFileItemProps = {
   file: UploadedFile;
-  onView: (file: UploadedFile) => void;
-  onRemove: (id: string) => void;
+  onView: (file: UploadedFile, e: React.MouseEvent) => void; // ← e нэм
+  onRemove: (id: string, e: React.MouseEvent) => void; // ← e нэм
 };
 
 export function UploadedFileItem({
@@ -37,7 +37,7 @@ export function UploadedFileItem({
           variant="ghost"
           size="icon"
           className="h-8 w-8"
-          onClick={() => onView(file)}
+          onClick={(e) => onView(file, e)} // ← e дамжуул
         >
           <Eye className="h-4 w-4" />
         </Button>
@@ -45,7 +45,7 @@ export function UploadedFileItem({
           variant="ghost"
           size="icon"
           className="h-8 w-8 text-destructive hover:text-destructive"
-          onClick={() => onRemove(file.id)}
+          onClick={(e) => onRemove(file.id, e)} // ← e дамжуул
         >
           <Trash2 className="h-4 w-4" />
         </Button>
