@@ -2,19 +2,31 @@
 
 import { motion } from "framer-motion";
 import { FileSpreadsheet, Eye, Trash2 } from "lucide-react";
+import { Button } from "@/app/_components/ui/button";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
+import { UploadedFilesSkeleton } from "./uploaded-files-skeleton";
 
 type UploadedFilesSectionProps = {
   files: UploadedFile[];
+  isLoading?: boolean;
+  isError?: string | null;
+  onRetry?: () => void;
   onRemove?: (id: string) => void;
   onView?: (file: UploadedFile) => void;
 };
 
 export function UploadedFilesSection({
   files,
+  isLoading = false,
+  isError,
+  onRetry,
   onRemove,
   onView,
 }: UploadedFilesSectionProps) {
+  if (isLoading) {
+    return <UploadedFilesSkeleton />;
+  }
+
   return (
     <div className="rounded-xl glass neon-border p-6">
       <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
@@ -22,7 +34,19 @@ export function UploadedFilesSection({
         Uploaded Files
       </h2>
 
-      {files.length > 0 ? (
+      {isError ? (
+        <div className="text-center py-8 space-y-3">
+          <p className="text-sm text-destructive">
+            Failed to load uploaded files.
+          </p>
+          <p className="text-xs text-muted-foreground">{isError}</p>
+          {onRetry ? (
+            <Button variant="outline" size="sm" onClick={onRetry}>
+              Retry
+            </Button>
+          ) : null}
+        </div>
+      ) : files.length > 0 ? (
         <div className="space-y-3">
           {files.map((file, index) => {
             const rows = file.data?.length ?? 0;
