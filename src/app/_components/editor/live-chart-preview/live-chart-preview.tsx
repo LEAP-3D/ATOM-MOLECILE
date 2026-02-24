@@ -36,7 +36,23 @@ export function LiveChartPreview({
       {/* Chart Title */}
       <div className="p-4 border-b border-border/50">
         <h3 className="font-semibold">{result.title}</h3>
-        <p className="text-sm text-muted-foreground">{result.description}</p>
+        {result.insight ? (
+          <div className="mt-2">
+            <p className="mb-2 text-sm text-muted-foreground">
+              {result.insight.insight}
+            </p>
+
+            {result.insight.bullets?.length > 0 && (
+              <ul className="ml-5 list-disc space-y-1 text-sm text-muted-foreground">
+                {result.insight.bullets.map((bullet, index) => (
+                  <li key={index}>{bullet}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">{result.description}</p>
+        )}
       </div>
 
       {/* Chart */}
