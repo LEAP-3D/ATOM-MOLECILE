@@ -14,9 +14,10 @@ type Props = {
   color: string;
   tooltipStyle: React.CSSProperties;
   margin: { top: number; right: number; left: number; bottom: number };
+  yAxisKey?: string;
 };
 
-export function AreaChartView({ data, color, tooltipStyle, margin }: Props) {
+export function AreaChartView({ data, color, tooltipStyle, margin, yAxisKey }: Props) {
   return (
     <AreaChart data={data} margin={margin}>
       <defs>
@@ -39,7 +40,7 @@ export function AreaChartView({ data, color, tooltipStyle, margin }: Props) {
         stroke="hsl(var(--muted-foreground))"
         tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
       />
-      <Tooltip contentStyle={tooltipStyle} />
+      <Tooltip contentStyle={tooltipStyle}  formatter={(value) => [value, yAxisKey ?? "value"]}  />
       <Area
         type="monotone"
         dataKey="value"

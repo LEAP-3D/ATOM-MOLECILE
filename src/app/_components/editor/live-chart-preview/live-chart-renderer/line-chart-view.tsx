@@ -14,9 +14,10 @@ type Props = {
   color: string;
   tooltipStyle: React.CSSProperties;
   margin: { top: number; right: number; left: number; bottom: number };
+  yAxisKey?: string;
 };
 
-export function LineChartView({ data, color, tooltipStyle, margin }: Props) {
+export function LineChartView({ data, color, tooltipStyle, margin,yAxisKey }: Props) {
   return (
     <LineChart data={data} margin={margin}>
       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -32,7 +33,7 @@ export function LineChartView({ data, color, tooltipStyle, margin }: Props) {
         stroke="hsl(var(--muted-foreground))"
         tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
       />
-      <Tooltip contentStyle={tooltipStyle} />
+      <Tooltip contentStyle={tooltipStyle}  formatter={(value) => [value, yAxisKey ?? "value"]}/>
       <Line
         type="monotone"
         dataKey="value"
