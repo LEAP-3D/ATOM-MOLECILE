@@ -79,7 +79,7 @@ export function LiveChartRenderer({
     scatterData.length > 0 &&
     scatterData.every((point) => typeof point.x === "number");
 
-  const margin = { top: 20, right: 30, left: 20, bottom: 60 };
+  const margin = { top: 20, right: 30, left: 20, bottom: 5 };
 
   const tooltipStyle = {
     backgroundColor: "hsl(var(--card))",
