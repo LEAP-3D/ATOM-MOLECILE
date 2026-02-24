@@ -15,6 +15,8 @@ import { LineChartView } from "./line-chart-view";
 import { AreaChartView } from "./area-chart-view";
 import { PieChartView } from "./pie-chart-view";
 
+
+
 const COLORS = [
   "hsl(var(--chart-1))",
   "hsl(var(--chart-2))",
