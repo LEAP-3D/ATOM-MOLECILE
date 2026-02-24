@@ -7,6 +7,7 @@ import { LiveChartLoading } from "./live-chart-loading";
 import { LiveChartEmpty } from "./live-chart-empty";
 import { LiveChartRenderer } from "./live-chart-renderer/live-chart-renderer";
 import type { LatestChartResult } from "@/app/_hooks/useChartGeneration";
+import { ChartDownloadWrapper } from "./chart-download-wrapper";
 
 type LiveChartPreviewProps = {
   file: UploadedFile | null;
@@ -57,12 +58,16 @@ export function LiveChartPreview({
 
       {/* Chart */}
       <div className="flex-1 p-4">
+        <ChartDownloadWrapper title={result.title}>
+             <div className="h-[500px]">
         <LiveChartRenderer
           chartType={selectedChartType}
           chartData={result.chartData}
           xAxisKey={result.xAxisKey}
           yAxisKey={result.yAxisKey}
         />
+        </div>
+        </ChartDownloadWrapper>
       </div>
     </motion.div>
   );
