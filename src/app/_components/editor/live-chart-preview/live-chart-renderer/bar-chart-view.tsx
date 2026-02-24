@@ -15,9 +15,10 @@ type Props = {
   colors: string[];
   tooltipStyle: React.CSSProperties;
   margin: { top: number; right: number; left: number; bottom: number };
+  yAxisKey?: string; // ← нэмсэн
 };
 
-export function BarChartView({ data, colors, margin }: Props) {
+export function BarChartView({ data, colors, margin, yAxisKey }: Props) {
   return (
     <BarChart data={data} margin={margin}>
       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -36,11 +37,12 @@ export function BarChartView({ data, colors, margin }: Props) {
       <Tooltip
         contentStyle={{
           backgroundColor: "#1c1c1c",
-          border: "1px solid ##dbdbdb",
+          border: "1px solid #dbdbdb",
           borderRadius: "10px",
         }}
         itemStyle={{ color: "#ffffff" }}
         labelStyle={{ color: "#ffffff" }}
+        formatter={(value) => [value, yAxisKey ?? "value"]} // ← yAxisKey ашиглана
       />
       <Bar dataKey="value" radius={[4, 4, 0, 0]}>
         {data.map((_, index) => (

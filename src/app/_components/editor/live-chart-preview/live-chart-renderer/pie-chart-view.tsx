@@ -13,9 +13,10 @@ type Props = {
   data: { name: string; value: number }[];
   colors: string[];
   tooltipStyle: React.CSSProperties;
+  yAxisKey?: string;
 };
 
-export function PieChartView({ data, colors }: Props) {
+export function PieChartView({ data, colors,yAxisKey }: Props) {
   const slice = data.slice(0, 8);
 
   return (
@@ -44,6 +45,7 @@ export function PieChartView({ data, colors }: Props) {
           }}
           itemStyle={{ color: "#ffffff" }}
           labelStyle={{ color: "#ffffff" }}
+          formatter={(value) => [value, yAxisKey ?? "value"]}
         />
         <Legend />
       </PieChart>

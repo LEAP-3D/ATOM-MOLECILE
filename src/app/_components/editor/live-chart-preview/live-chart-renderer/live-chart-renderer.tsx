@@ -94,6 +94,7 @@ export function LiveChartRenderer({
             colors={COLORS}
             tooltipStyle={tooltipStyle}
             margin={margin}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -104,6 +105,7 @@ export function LiveChartRenderer({
             color={COLORS[1]}
             tooltipStyle={tooltipStyle}
             margin={margin}
+             yAxisKey={yAxisKey}
           />
         );
 
@@ -114,6 +116,7 @@ export function LiveChartRenderer({
             color={COLORS[2]}
             tooltipStyle={tooltipStyle}
             margin={margin}
+             yAxisKey={yAxisKey}
           />
         );
 
@@ -123,6 +126,7 @@ export function LiveChartRenderer({
             data={pieData}
             colors={COLORS}
             tooltipStyle={tooltipStyle}
+             yAxisKey={yAxisKey}
           />
         );
 
