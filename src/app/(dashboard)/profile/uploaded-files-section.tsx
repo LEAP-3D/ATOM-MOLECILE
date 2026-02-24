@@ -2,24 +2,19 @@
 
 import { motion } from "framer-motion";
 import { FileSpreadsheet, Eye, Trash2 } from "lucide-react";
-import { Button } from "@/app/_components/ui/button";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 
-type ExcelUploadProps = {
+type UploadedFilesSectionProps = {
   files: UploadedFile[];
-  onUpload?: (file: UploadedFile) => void;
   onRemove?: (id: string) => void;
   onView?: (file: UploadedFile) => void;
 };
 
 export function UploadedFilesSection({
   files,
-  // onUpload,
   onRemove,
   onView,
-}: ExcelUploadProps) {
-  console.log("📁 UploadedFilesSection rendered with files:", files);
-
+}: UploadedFilesSectionProps) {
   return (
     <div className="rounded-xl glass neon-border p-6">
       <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
@@ -60,23 +55,24 @@ export function UploadedFilesSection({
                 </div>
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => onView?.(file)}
+                  <button
+                    className="p-1.5 rounded hover:bg-muted transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onView?.(file);
+                    }}
                   >
                     <Eye className="h-4 w-4" />
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
-                    onClick={() => onRemove?.(file.id)}
+                  </button>
+                  <button
+                    className="p-1.5 rounded hover:bg-muted transition-colors text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemove?.(file.id);
+                    }}
                   >
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </div>
               </motion.div>
             );
