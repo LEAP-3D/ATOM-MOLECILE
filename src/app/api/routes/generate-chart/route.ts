@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { refineChartSqlWithGemini } from "./utils/gemini-refiner";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { improveUserPromptWithGemini } from "./utils/gemini-prompt";
+import { generateInsight } from "./utils/insight";
 
 const CHART_TYPES = ["bar", "line", "area", "pie", "scatter"] as const;
 type ChartType = (typeof CHART_TYPES)[number];
@@ -38,13 +39,11 @@ function normalizeChartType(type: unknown): ChartType {
   if (raw.includes("line")) return "line";
   return "bar";
 }
-
 function normalizeConfidence(value: unknown): number {
   const numeric = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numeric)) return 0;
   return Math.min(1, Math.max(0, numeric));
 }
-
 function normalizeRecommendedCharts(
   charts: unknown
 ): Array<{ chartType: ChartType; confidence: number }> {
@@ -59,7 +58,6 @@ function normalizeRecommendedCharts(
     };
   });
 }
-
 function assertSafeSelect(
   sql: string,
   tableName: string,
@@ -76,7 +74,6 @@ function assertSafeSelect(
     throw new Error("Unsafe SQL detected");
   if (s.includes(";") || s.includes("--") || s.includes("/*"))
     throw new Error("Multi-statement/comments not allowed");
-
   const fromRe = new RegExp(`\\bfrom\\s+${tableName}\\b`, "i");
   if (!fromRe.test(sql)) throw new Error(`SQL must query FROM ${tableName}`);
   const fileRe = /where[\s\S]*file_name/i;
@@ -90,14 +87,12 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId)
       return NextResponse.json({ error: "Нэвтрээгүй байна" }, { status: 401 });
-
     const body = (await req.json()) as {
       query?: string;
       filesData?: FileData[];
     };
     const query = body.query?.trim();
     const filesData = body.filesData;
-
     if (!query || !filesData?.length) {
       return NextResponse.json(
         { error: "Query болон файлын мэдээлэл шаардлагатай" },
@@ -148,6 +143,14 @@ export async function POST(req: Request) {
     });
     if (error) throw new Error(error.message);
     console.log("📊 Query result:", data);
+    const insight = generateInsight({
+      chartData: (data ?? []) as Record<string, unknown>[],
+      xAxisKey: geminiResponse.xAxisKey,
+      yAxisKey: geminiResponse.yAxisKey,
+      chartType: normalizeChartType(geminiResponse.chartType),
+      title: geminiResponse.title ?? "",
+    });
+    console.log("🧠 Insight:", insight);
     return NextResponse.json({
       success: true,
       chartType: normalizeChartType(geminiResponse.chartType),
@@ -159,6 +162,7 @@ export async function POST(req: Request) {
       chartData: data ?? [],
       xAxisKey: geminiResponse.xAxisKey,
       yAxisKey: geminiResponse.yAxisKey,
+      insight,
     });
   } catch (error: unknown) {
     console.error("🔥 Generate chart error:", error);

@@ -62,6 +62,10 @@ OUTPUT SHAPE RULES (chart-ready):
 - GROUP BY expression MUST match the first column expression exactly.
 - Add ORDER BY [the first column alias]
 
+Additionally return:
+- "aggregationType": one of "count" | "sum" | "avg" | "distribution" | "trend"
+- "analysisHint": short English phrase describing what kind of insight should be generated
+
 Return ONLY valid JSON (no markdown):
 {
   "chartType": "bar" | "line" | "area" | "pie" | "scatter",
@@ -70,6 +74,8 @@ Return ONLY valid JSON (no markdown):
   "description": "string",
   "xAxisKey": "the_first_column_alias",
   "yAxisKey": "the_second_column_alias"
+  "aggregationType": "distribution",
+  "analysisHint": "Compare distribution balance and dominant category"
 }
 `;
 

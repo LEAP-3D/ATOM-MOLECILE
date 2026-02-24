@@ -9,7 +9,7 @@ type PromptImproverResponse = {
     type?: "bar" | "pie" | "line" | "area" | "scatter";
     chart_type?: "bar" | "pie" | "line" | "area" | "scatter";
     chartType?: "bar" | "pie" | "line" | "area" | "scatter";
-    confidence: number; // 0..1
+    confidence: number;
   }>;
 };
 
@@ -39,7 +39,7 @@ Return ONLY valid JSON with EXACTLY these keys:
 Rules:
 1) Do NOT output SQL.
 2) Keep normalized_query short and clear (prefer English).
-3) description must be in English, friendly, 1-2 sentences, explain what chart will show and why top chart types fit.
+3) description must be in Mongolian, friendly and natural, 1-2 sentences. It should explain what the chart will show and why the top recommended chart types are suitable.
 4) recommended_charts must include exactly 5 items in this order: bar, pie, line, area, scatter
 5) confidence is a number between 0 and 1.
 6) If the request is not time-based, line/area should have low confidence.

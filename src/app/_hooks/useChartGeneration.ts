@@ -1,4 +1,3 @@
-// app/_hooks/useChartGeneration.ts
 import { useState, useCallback } from "react";
 import axios from "axios";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
@@ -8,13 +7,6 @@ import {
   type ChartType,
 } from "../_components/editor/chart-suggestions/chart-types";
 import { pickHighestConfidenceChartType } from "../_components/editor/chart-suggestions/pick-highest-confidence";
-// import {
-//   CHART_TYPE_PRIORITY,
-//   pickHighestConfidenceChartType,
-//   type ChartType,
-//   type RecommendedChart,
-// } from "@/app/_components/editor/chart-suggestions/ChartSuggestions";
-
 function normalizeChartType(type: unknown): ChartType {
   const raw = String(type ?? "")
     .toLowerCase()
@@ -47,6 +39,10 @@ type ChartGenerationResponse = {
   chartData?: unknown;
   xAxisKey?: string;
   yAxisKey?: string;
+  insight?: {
+    insight?: string;
+    bullets?: unknown;
+  };
   recommendedCharts?: Array<{
     chartType?: unknown;
     chart_type?: unknown;
@@ -67,6 +63,10 @@ export type LatestChartResult = {
   xAxisKey: string;
   yAxisKey: string;
   recommendedCharts: RecommendedChart[];
+  insight?: {
+    insight: string;
+    bullets: string[];
+  };
 };
 
 export function useChartGeneration() {
@@ -105,7 +105,6 @@ export function useChartGeneration() {
         const data = response.data as ChartGenerationResponse;
 
         if (data.success) {
-          // backend-ээс ирж буй өгөгдлийг шууд response.data-аас авна
           console.log("✅ Received data:", data);
           const chartData: Record<string, unknown>[] = Array.isArray(
             data.chartData
@@ -122,7 +121,6 @@ export function useChartGeneration() {
             data.recommended_charts ??
             []
           ).map((entry) => ({
-            // Accept chartType/chart_type and normalize to app-level chartType.
             chartType: normalizeChartType(
               (entry as { chartType?: unknown; chart_type?: unknown })
                 .chartType ??
@@ -132,7 +130,6 @@ export function useChartGeneration() {
             confidence: normalizeConfidence(entry.confidence),
           }));
 
-          // Compute default chart from highest confidence + priority tie-break.
           // eslint-disable-next-line @typescript-eslint/no-shadow
           const selectedChartType = pickHighestConfidenceChartType(
             normalizedRecommendedCharts
@@ -145,9 +142,15 @@ export function useChartGeneration() {
             xAxisKey: data.xAxisKey || rowKeys[0] || "",
             yAxisKey: data.yAxisKey || rowKeys[1] || "",
             recommendedCharts: normalizedRecommendedCharts,
+            insight: data.insight
+              ? {
+                  insight: String(data.insight.insight ?? ""),
+                  bullets: Array.isArray(data.insight.bullets)
+                    ? data.insight.bullets.map((item) => String(item))
+                    : [],
+                }
+              : undefined,
           };
-
-          // Store latest generated payload once; chart switches reuse this data.
           setLatestResult(normalizedResult);
           setSelectedChartType(selectedChartType);
           return { description: data.description ?? "" };
