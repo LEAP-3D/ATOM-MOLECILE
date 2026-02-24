@@ -9,7 +9,8 @@ import { DataPreviewModal } from "@/app/_components/editor/data-preview-modal";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
 
 export default function ProfilePage() {
-  const { files, handleRemove } = useFileManagement();
+  const { files, isLoadingFiles, filesError, retryFetchFiles, handleRemove } =
+    useFileManagement();
   const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const handleView = useCallback((file: UploadedFile) => {
@@ -49,6 +50,9 @@ export default function ProfilePage() {
         >
           <UploadedFilesSection
             files={files}
+            isLoading={isLoadingFiles}
+            isError={filesError}
+            onRetry={retryFetchFiles}
             // onUpload={handleUpload}
             onRemove={handleRemove}
             onView={handleView}

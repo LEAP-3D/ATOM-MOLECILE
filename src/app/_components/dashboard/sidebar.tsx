@@ -11,7 +11,7 @@ import { SidebarHeader } from "./sidebar-header";
 import { SidebarFooter } from "./sidebar-footer";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "History", href: "/dashboard", icon: LayoutDashboard },
   { label: "Editor", href: "/editor", icon: PenTool },
   { label: "Profile", href: "/profile", icon: User },
   { label: "Settings", href: "/settings", icon: Settings },
@@ -59,7 +59,7 @@ export function DashboardSidebar() {
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
                 isActive
                   ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               {isActive && (
@@ -72,8 +72,8 @@ export function DashboardSidebar() {
 
               <Icon
                 className={cn(
-                  "h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110",
-                  isActive && "text-primary",
+                  "h-5 w-5 shrink-0 transition-transform group-hover:scale-110",
+                  isActive && "text-primary"
                 )}
               />
 
