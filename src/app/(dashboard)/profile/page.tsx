@@ -2,36 +2,11 @@
 
 import { motion } from "framer-motion";
 import { ProfileSettingsCard } from "./profile-settings-card";
-import { SavedChartsSection } from "./saved-charts-section";
 import { UploadedFilesSection } from "./uploaded-files-section";
 import { useFileManagement } from "@/app/_hooks/useFileManagement";
 import { useCallback, useState } from "react";
 import { DataPreviewModal } from "@/app/_components/editor/data-preview-modal";
 import type { UploadedFile } from "@/app/_components/editor/excel-upload";
-
-const mockSavedCharts = [
-  {
-    id: "1",
-    name: "Q4 Sales Analysis",
-    type: "bar",
-    createdAt: new Date("2024-01-15"),
-    thumbnail: "bar",
-  },
-  {
-    id: "2",
-    name: "Monthly Revenue Trends",
-    type: "line",
-    createdAt: new Date("2024-01-10"),
-    thumbnail: "line",
-  },
-  {
-    id: "3",
-    name: "Market Share Distribution",
-    type: "pie",
-    createdAt: new Date("2024-01-05"),
-    thumbnail: "pie",
-  },
-];
 
 export default function ProfilePage() {
   const { files, handleRemove } = useFileManagement();
@@ -52,7 +27,7 @@ export default function ProfilePage() {
           Your <span className="gradient-text">Profile</span>
         </h1>
         <p className="text-muted-foreground">
-          Manage your account settings and view your saved work
+          Manage your account settings and uploaded files
         </p>
       </motion.div>
 
@@ -72,7 +47,6 @@ export default function ProfilePage() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-2 space-y-6"
         >
-          <SavedChartsSection charts={mockSavedCharts} />
           <UploadedFilesSection
             files={files}
             // onUpload={handleUpload}

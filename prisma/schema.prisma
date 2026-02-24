@@ -39,3 +39,46 @@ model UploadedFile {
 
   @@map("uploaded_files")
 }
+
+enum ChartType {
+  bar
+  pie
+  line
+  area
+  scatter
+}
+
+model ChartHistory {
+  id String @id @default(cuid())
+
+  // Auth / ownership (Clerk user id гэх мэт)
+  userId String
+
+  // File context
+  fileId   String? // optional: uploaded_files table-тай холбох бол
+  fileName String
+
+  // Query layer
+  originalQuery   String
+  normalizedQuery String
+  sql             String
+
+  // Chart layer
+  chartType   ChartType
+  title       String
+  description String?
+  xAxisKey    String
+  yAxisKey    String
+
+  // Result snapshot (render хийхэд хангалттай)
+  data        Json // [{ class: "English", student_count: 60 }, ...]
+  insight     Json? // { summary: "...", bullets: [...] } гэх мэт
+
+  // Meta
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([userId, fileName])
+  @@map("chart_history")
+}

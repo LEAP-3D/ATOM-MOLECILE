@@ -113,6 +113,19 @@ export async function POST(req: Request) {
       );
     }
     const ImprovedQuery = await improveUserPromptWithGemini(query);
+    const normalizedQuery = String(
+      (
+        ImprovedQuery as {
+          normalized_query?: unknown;
+        }
+      ).normalized_query ?? ""
+    ).trim();
+    if (!normalizedQuery) {
+      return NextResponse.json(
+        { error: "Normalized query is missing from improver output" },
+        { status: 422 }
+      );
+    }
     console.log("✨ Improved query:", ImprovedQuery);
     const normalizedRecommendedCharts = normalizeRecommendedCharts(
       (
@@ -130,7 +143,7 @@ export async function POST(req: Request) {
     );
     const rawGemini = await refineChartSqlWithGemini(
       tableName,
-      ImprovedQuery.normalized_query,
+      normalizedQuery,
       columns,
       fileName,
       userId
@@ -154,6 +167,11 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       chartType: normalizeChartType(geminiResponse.chartType),
+      originalQuery: query,
+      original_query: query,
+      normalizedQuery,
+      normalized_query: normalizedQuery,
+      sql: geminiResponse.sql,
       title: geminiResponse.title ?? "",
       description:
         ImprovedQuery.description ?? geminiResponse.description ?? "",

@@ -22,19 +22,21 @@ function normalizeChartType(type: unknown): ChartType {
   if (raw === "donut" || raw === "doughnut") return "pie";
   return "bar";
 }
-
 function normalizeConfidence(value: unknown): number {
   const numeric = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numeric)) return 0;
   return Math.min(1, Math.max(0, numeric));
 }
-
 type ChartGenerationResponse = {
   success?: boolean;
+  originalQuery?: unknown;
+  original_query?: unknown;
+  sql?: unknown;
   chartType?: unknown;
   chart_type?: unknown;
   title?: string;
   description?: string;
+  normalizedQuery?: unknown;
   normalized_query?: string;
   chartData?: unknown;
   xAxisKey?: string;
@@ -54,11 +56,12 @@ type ChartGenerationResponse = {
     confidence?: unknown;
   }>;
 };
-
 export type LatestChartResult = {
+  originalQuery: string;
   title: string;
   description: string;
   normalizedQuery: string;
+  sql: string;
   chartData: Record<string, unknown>[];
   xAxisKey: string;
   yAxisKey: string;
@@ -68,14 +71,12 @@ export type LatestChartResult = {
     bullets: string[];
   };
 };
-
 export function useChartGeneration() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [latestResult, setLatestResult] = useState<LatestChartResult | null>(
     null
   );
   const [selectedChartType, setSelectedChartType] = useState<ChartType>("bar");
-
   const generateChart = useCallback(
     async (
       query: string,
@@ -85,25 +86,20 @@ export function useChartGeneration() {
         alert("Файл сонгоно уу");
         return { description: "" };
       }
-
       setIsChatLoading(true);
-
       try {
         const filesData = selectedFiles.map((file) => ({
           name: file.name,
           columns: file.columns,
           data: file.data,
         }));
-
         console.log("📤 Sending to HF API:", { query, filesData });
-
         const response = await axios.post("/api/routes/generate-chart", {
           query,
           filesData: filesData,
         });
         console.log("📥 Received response from HF API:", response.data);
         const data = response.data as ChartGenerationResponse;
-
         if (data.success) {
           console.log("✅ Received data:", data);
           const chartData: Record<string, unknown>[] = Array.isArray(
@@ -129,15 +125,20 @@ export function useChartGeneration() {
             ),
             confidence: normalizeConfidence(entry.confidence),
           }));
-
           // eslint-disable-next-line @typescript-eslint/no-shadow
           const selectedChartType = pickHighestConfidenceChartType(
             normalizedRecommendedCharts
           );
           const normalizedResult: LatestChartResult = {
+            originalQuery: String(
+              data.originalQuery ?? data.original_query ?? query
+            ),
             title: data.title || "Generated Chart",
             description: data.description || "AI-generated visualization",
-            normalizedQuery: String(data.normalized_query ?? ""),
+            normalizedQuery: String(
+              data.normalizedQuery ?? data.normalized_query ?? ""
+            ),
+            sql: String(data.sql ?? ""),
             chartData,
             xAxisKey: data.xAxisKey || rowKeys[0] || "",
             yAxisKey: data.yAxisKey || rowKeys[1] || "",
@@ -166,10 +167,10 @@ export function useChartGeneration() {
     },
     []
   );
-
   return {
     isChatLoading,
     latestResult,
+    setLatestResult,
     selectedChartType,
     setSelectedChartType,
     generateChart,
