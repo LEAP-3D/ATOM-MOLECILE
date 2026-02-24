@@ -57,9 +57,9 @@ export function LiveChartPreview({
       </div>
 
       {/* Chart */}
-      <div className="flex-1 p-4">
-        <ChartDownloadWrapper title={result.title}>
-             <div className="h-[500px]">
+      <div className="flex-1 p-2 w-full overflow-hidden">
+        <ChartDownloadWrapper >
+             <div className="h-[430px]">
         <LiveChartRenderer
           chartType={selectedChartType}
           chartData={result.chartData}
