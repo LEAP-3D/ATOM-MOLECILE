@@ -14,6 +14,7 @@ type LiveChartPreviewProps = {
   result: LatestChartResult | null;
   selectedChartType: ChartType | null;
   isLoading?: boolean;
+  savedChartId?: string | null; // ← нэмэгдсэн
 };
 
 export function LiveChartPreview({
@@ -21,6 +22,7 @@ export function LiveChartPreview({
   result,
   selectedChartType,
   isLoading,
+  savedChartId,
 }: LiveChartPreviewProps) {
   if (isLoading) return <LiveChartLoading />;
 
@@ -34,7 +36,7 @@ export function LiveChartPreview({
       animate={{ opacity: 1 }}
       className="h-full flex flex-col"
     >
-      {/* Chart Title */}
+      {/* Title + Insight — embed-д ороогүй, зөвхөн UI-д харагдана */}
       <div className="p-4 border-b border-border/50">
         <h3 className="font-semibold">{result.title}</h3>
         {result.insight ? (
@@ -42,7 +44,6 @@ export function LiveChartPreview({
             <p className="mb-2 text-sm text-muted-foreground">
               {result.insight.insight}
             </p>
-
             {result.insight.bullets?.length > 0 && (
               <ul className="ml-5 list-disc space-y-1 text-sm text-muted-foreground">
                 {result.insight.bullets.map((bullet, index) => (
@@ -56,17 +57,20 @@ export function LiveChartPreview({
         )}
       </div>
 
-      {/* Chart */}
+      {/* Зөвхөн chart → PNG татах + embed хоёулд энэ л орно */}
       <div className="flex-1 p-2 w-full overflow-hidden">
-        <ChartDownloadWrapper >
-             <div className="h-[430px]">
-        <LiveChartRenderer
-          chartType={selectedChartType}
-          chartData={result.chartData}
-          xAxisKey={result.xAxisKey}
-          yAxisKey={result.yAxisKey}
-        />
-        </div>
+        <ChartDownloadWrapper
+          title={result.title}
+          chartId={savedChartId ?? undefined}
+        >
+          <div className="h-[430px]">
+            <LiveChartRenderer
+              chartType={selectedChartType}
+              chartData={result.chartData}
+              xAxisKey={result.xAxisKey}
+              yAxisKey={result.yAxisKey}
+            />
+          </div>
         </ChartDownloadWrapper>
       </div>
     </motion.div>

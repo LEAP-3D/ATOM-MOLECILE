@@ -50,7 +50,7 @@ export function useSavedChart({
   const [loadedSavedChart, setLoadedSavedChart] =
     useState<SavedChartDetail | null>(null);
   const [currentSavedChartId, setCurrentSavedChartId] = useState<string | null>(
-    null
+    savedChartIdParam
   );
   const [isLoadingSavedChart, setIsLoadingSavedChart] = useState(false);
   const [isSavingChart, setIsSavingChart] = useState(false);
@@ -165,5 +165,6 @@ export function useSavedChart({
     isSavingChart,
     canSaveChart,
     handleSaveChart,
+    currentSavedChartId, // ← нэмэгдсэн
   };
 }

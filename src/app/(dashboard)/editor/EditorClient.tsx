@@ -45,15 +45,20 @@ export default function EditorClient() {
     generateChart,
   } = useChartGeneration();
 
-  const { isLoadingSavedChart, isSavingChart, canSaveChart, handleSaveChart } =
-    useSavedChart({
-      savedChartIdParam,
-      activeFile,
-      latestResult,
-      selectedChartType,
-      setLatestResult,
-      setSelectedChartType,
-    });
+  const {
+    isLoadingSavedChart,
+    isSavingChart,
+    canSaveChart,
+    handleSaveChart,
+    currentSavedChartId, // ← нэмэгдсэн
+  } = useSavedChart({
+    savedChartIdParam,
+    activeFile,
+    latestResult,
+    selectedChartType,
+    setLatestResult,
+    setSelectedChartType,
+  });
 
   const handleView = useCallback((file: UploadedFile) => {
     setPreviewFile(file);
@@ -134,6 +139,7 @@ export default function EditorClient() {
             result={latestResult}
             selectedChartType={selectedChartType}
             isLoading={isChatLoading || isLoadingSavedChart}
+            savedChartId={currentSavedChartId} // ← нэмэгдсэн
           />
         </div>
       </motion.div>
