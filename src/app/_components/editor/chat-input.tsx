@@ -21,6 +21,7 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
     e.preventDefault();
     if (message.trim() && !isLoading && !disabled) {
       const userMessage = message.trim();
+      setMessage(""); // ✅ Шууд цэвэрлэнэ — loading үед хоосон харагдана
       setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
       const result = await onSubmit(userMessage);
       const description = result?.description?.trim();
@@ -30,7 +31,6 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
           { role: "assistant", content: description },
         ]);
       }
-      setMessage("");
     }
   };
 
