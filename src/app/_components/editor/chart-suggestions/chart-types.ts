@@ -6,6 +6,7 @@ export const CHART_TYPE_PRIORITY = [
   "line",
   "area",
   "scatter",
+  "bar-race",
 ] as const;
 
 export type ChartType = (typeof CHART_TYPE_PRIORITY)[number];
