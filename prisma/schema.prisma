@@ -46,6 +46,7 @@ enum ChartType {
   line
   area
   scatter
+  bar-rice
 }
 
 model ChartHistory {

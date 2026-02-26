@@ -14,8 +14,7 @@ import { BarChartView } from "./bar-chart-view";
 import { LineChartView } from "./line-chart-view";
 import { AreaChartView } from "./area-chart-view";
 import { PieChartView } from "./pie-chart-view";
-
-
+import { BarRaceChart } from "./bar-race-chart-view";
 
 const COLORS = [
   "hsl(var(--chart-1))",
@@ -23,6 +22,7 @@ const COLORS = [
   "hsl(var(--chart-3))",
   "hsl(var(--chart-4))",
   "hsl(var(--chart-5))",
+  "hsl(var(--chart-6))",
 ];
 
 export function LiveChartRenderer({
@@ -87,6 +87,16 @@ export function LiveChartRenderer({
     borderRadius: "8px",
   } as const;
 
+  if (chartType === "bar-race") {
+    return (
+      <div style={{ width: "100%", height: "100%" }}>
+        <BarRaceChart
+          data={sourceChartData as { year: number; [key: string]: number }[]}
+        />
+      </div>
+    );
+  }
+
   const chart = (() => {
     switch (chartType) {
       case "bar":
@@ -107,7 +117,7 @@ export function LiveChartRenderer({
             color={COLORS[1]}
             tooltipStyle={tooltipStyle}
             margin={margin}
-             yAxisKey={yAxisKey}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -118,7 +128,7 @@ export function LiveChartRenderer({
             color={COLORS[2]}
             tooltipStyle={tooltipStyle}
             margin={margin}
-             yAxisKey={yAxisKey}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -128,7 +138,7 @@ export function LiveChartRenderer({
             data={pieData}
             colors={COLORS}
             tooltipStyle={tooltipStyle}
-             yAxisKey={yAxisKey}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -161,7 +171,7 @@ export function LiveChartRenderer({
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      {chart}
+      {chart ?? <div />}
     </ResponsiveContainer>
   );
 }

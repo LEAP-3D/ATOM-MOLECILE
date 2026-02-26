@@ -4,6 +4,7 @@ import {
   LineChart,
   PieChart,
   ScatterChart,
+  TrendingUp,
 } from "lucide-react";
 import type { ChartType, LucideIconType } from "./chart-types";
 
@@ -35,5 +36,10 @@ export const chartMeta: Record<
     label: "Scatter Plot",
     Icon: ScatterChart,
     reason: "Best for correlations between two metrics.",
+  },
+  "bar-race": {
+    label: "Bar Race",
+    Icon: TrendingUp,
+    reason: "Best for animated ranking changes over time.",
   },
 };
