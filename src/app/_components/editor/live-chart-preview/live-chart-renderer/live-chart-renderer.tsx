@@ -159,7 +159,10 @@ export function LiveChartRenderer({
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(value) => [value, yAxisKey ?? "value"]}
+            />
             <Scatter name="Data" data={scatterData} fill={COLORS[4]} />
           </ScatterChart>
         );
