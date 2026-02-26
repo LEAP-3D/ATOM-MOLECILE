@@ -28,6 +28,7 @@ export async function GET(
         title: chart.title,
         chartType: chart.chartType,
         fileName: chart.fileName,
+        source: chart.fileName,
         fileId: chart.fileId,
         description: chart.description ?? "",
         originalQuery: chart.originalQuery,

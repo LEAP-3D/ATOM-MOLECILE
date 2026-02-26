@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 // import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +21,7 @@ import type {
 
 // Дээрх компонентуудыг импортлох
 import { StatsCards } from "./StatsCards";
-import { ChartCard } from "./ChartCard";
+import { ChartCard, ChartCardSkeleton } from "./ChartCard";
 
 export default function DashboardPage() {
   const [savedCharts, setSavedCharts] = useState<SavedChartSummary[]>([]);
@@ -92,7 +91,7 @@ export default function DashboardPage() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoadingCharts
           ? Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-48 w-full" />
+              <ChartCardSkeleton key={i} />
             ))
           : savedCharts.map((chart, i) => (
               <ChartCard

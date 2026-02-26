@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 import { type SavedChartSummary } from "@/app/_lib/saved-charts";
+import { SavedChartPreview, SavedChartPreviewSkeleton } from "./SavedChartPreview";
 
 type ChartCardProps = {
   chart: SavedChartSummary;
@@ -43,7 +44,10 @@ export function ChartCard({
       transition={{ delay: 0.05 * index }}
     >
       <Card className="h-full">
-        <CardHeader>
+        <CardContent className="pt-6 pb-0">
+          <SavedChartPreview type={chart.chartType} data={chart.chartData} />
+        </CardContent>
+        <CardHeader className="pb-4">
           <div className="flex items-start justify-between gap-3">
             <CardTitle className="line-clamp-2 text-lg">
               {chart.title || "Untitled chart"}
@@ -81,5 +85,28 @@ export function ChartCard({
         </CardFooter>
       </Card>
     </motion.div>
+  );
+}
+
+export function ChartCardSkeleton() {
+  return (
+    <Card className="h-full">
+      <CardContent className="pt-6 pb-0">
+        <SavedChartPreviewSkeleton />
+      </CardContent>
+      <CardHeader className="pb-4">
+        <div className="space-y-2">
+          <div className="h-5 w-3/4 rounded bg-muted/50" />
+          <div className="h-4 w-1/3 rounded bg-muted/50" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="h-4 w-2/3 rounded bg-muted/50" />
+      </CardContent>
+      <CardFooter className="gap-2">
+        <div className="h-9 flex-1 rounded bg-muted/50" />
+        <div className="h-9 w-20 rounded bg-muted/50" />
+      </CardFooter>
+    </Card>
   );
 }

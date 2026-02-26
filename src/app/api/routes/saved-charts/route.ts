@@ -19,7 +19,7 @@ const saveChartSchema = z.object({
   chartType: chartTypeSchema,
   xAxisKey: z.string().trim().min(1),
   yAxisKey: z.string().trim().min(1),
-  chartData: z.array(z.record(z.string(), z.unknown())),
+  chartData: z.array(z.record(z.string(), z.any())),
   insight: z
     .object({
       insight: z.string(),
@@ -34,15 +34,29 @@ type ApiSavedChart = {
   title: string;
   chartType: ChartType;
   fileName: string;
+  source: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chartData: Record<string, any>[];
   createdAt: string;
   updatedAt: string;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toChartData(data: Prisma.JsonValue): Record<string, any>[] {
+  if (!Array.isArray(data)) return [];
+  return data.filter(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (entry): entry is Record<string, any> =>
+      typeof entry === "object" && entry !== null && !Array.isArray(entry)
+  );
+}
 
 function toApiSavedChart(value: {
   id: string;
   title: string;
   chartType: ChartType;
   fileName: string;
+  data: Prisma.JsonValue;
   createdAt: Date;
   updatedAt: Date;
 }): ApiSavedChart {
@@ -51,6 +65,8 @@ function toApiSavedChart(value: {
     title: value.title,
     chartType: value.chartType,
     fileName: value.fileName,
+    source: value.fileName,
+    chartData: toChartData(value.data),
     createdAt: value.createdAt.toISOString(),
     updatedAt: value.updatedAt.toISOString(),
   };
@@ -71,6 +87,7 @@ export async function GET() {
         title: true,
         chartType: true,
         fileName: true,
+        data: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -175,6 +192,7 @@ export async function POST(req: Request) {
           title: true,
           chartType: true,
           fileName: true,
+          data: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -187,6 +205,7 @@ export async function POST(req: Request) {
           title: true,
           chartType: true,
           fileName: true,
+          data: true,
           createdAt: true,
           updatedAt: true,
         },
