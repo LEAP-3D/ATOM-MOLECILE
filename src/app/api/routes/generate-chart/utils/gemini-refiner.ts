@@ -2,6 +2,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+function escapeSqlLiteral(value: string): string {
+  return value.replace(/'/g, "''");
+}
+
 export async function refineChartSqlWithGemini(
   tableName: string,
   ImprovedQuery: string,
@@ -17,8 +21,8 @@ export async function refineChartSqlWithGemini(
     },
   });
 
-  const safeFile = fileName.replace(/'/g, "''");
-  const safeUser = userId.replace(/'/g, "''");
+  const safeFile = escapeSqlLiteral(fileName);
+  const safeUser = escapeSqlLiteral(userId);
   const prompt = `
 You are an SQL aggregation assistant for PostgreSQL.
 
@@ -73,9 +77,95 @@ Return ONLY valid JSON (no markdown):
   "title": "string",
   "description": "string",
   "xAxisKey": "the_first_column_alias",
-  "yAxisKey": "the_second_column_alias"
+  "yAxisKey": "the_second_column_alias",
   "aggregationType": "distribution",
   "analysisHint": "Compare distribution balance and dominant category"
+}
+`;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text().trim();
+}
+
+export async function refineChartSqlWithGeminiTwoFiles(
+  tableName: string,
+  improvedQuery: string,
+  files: {
+    fileAName: string;
+    columnsA: string[];
+    fileBName: string;
+    columnsB: string[];
+  },
+  userId: string,
+  joinKey: string | null
+) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0,
+    },
+  });
+
+  const safeA = escapeSqlLiteral(files.fileAName);
+  const safeB = escapeSqlLiteral(files.fileBName);
+  const safeUser = escapeSqlLiteral(userId);
+
+  const joinInstruction = joinKey
+    ? `You MUST join by key:
+  a->>'${joinKey}' = b->>'${joinKey}'`
+    : `No shared key exists. Use cross join style pairing only (JOIN ... ON true).
+Set description to include a clear warning that correlation may be meaningless.`;
+
+  const prompt = `
+You are an SQL assistant for two-file correlation analysis in PostgreSQL.
+
+User request: "${improvedQuery}"
+
+Database table: ${tableName}
+
+CRITICAL DATA MODEL:
+- ${tableName} has one row per uploaded file.
+- Each file's records live in JSONB array column: content.
+- For two files, expand both arrays:
+  FROM ${tableName} uf1
+  CROSS JOIN LATERAL jsonb_array_elements(uf1.content) AS a
+  JOIN ${tableName} uf2 ON true
+  CROSS JOIN LATERAL jsonb_array_elements(uf2.content) AS b
+
+File A name: ${files.fileAName}
+File A columns: ${files.columnsA.join(", ")}
+File B name: ${files.fileBName}
+File B columns: ${files.columnsB.join(", ")}
+
+MANDATORY FILTERS (exact values required):
+- uf1.file_name = '${safeA}'
+- uf2.file_name = '${safeB}'
+- uf1.user_id = '${safeUser}'
+- uf2.user_id = '${safeUser}'
+
+MANDATORY JOIN RULE:
+${joinInstruction}
+
+MANDATORY OUTPUT SQL RULES:
+1) Return ONE SELECT/WITH query only. No comments, no semicolons.
+2) Use ONLY ${tableName} (self-join allowed).
+3) Return exactly TWO numeric columns with exact aliases:
+   NULLIF(a->>'<xField>','')::numeric AS x,
+   NULLIF(b->>'<yField>','')::numeric AS y
+4) Exclude null numeric rows in WHERE (x and y source fields must be non-empty).
+5) Prefer numeric columns that best match user intent.
+
+Return ONLY valid JSON with EXACTLY these keys:
+{
+  "chartType": "scatter",
+  "sql": "SELECT ...",
+  "title": "string",
+  "description": "string",
+  "xAxisKey": "x",
+  "yAxisKey": "y",
+  "aggregationType": "correlation",
+  "analysisHint": "short phrase"
 }
 `;
 

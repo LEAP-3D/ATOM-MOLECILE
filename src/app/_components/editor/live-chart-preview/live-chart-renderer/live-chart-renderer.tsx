@@ -15,8 +15,6 @@ import { LineChartView } from "./line-chart-view";
 import { AreaChartView } from "./area-chart-view";
 import { PieChartView } from "./pie-chart-view";
 
-
-
 const COLORS = [
   "hsl(var(--chart-1))",
   "hsl(var(--chart-2))",
@@ -107,7 +105,7 @@ export function LiveChartRenderer({
             color={COLORS[1]}
             tooltipStyle={tooltipStyle}
             margin={margin}
-             yAxisKey={yAxisKey}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -118,7 +116,7 @@ export function LiveChartRenderer({
             color={COLORS[2]}
             tooltipStyle={tooltipStyle}
             margin={margin}
-             yAxisKey={yAxisKey}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -128,7 +126,7 @@ export function LiveChartRenderer({
             data={pieData}
             colors={COLORS}
             tooltipStyle={tooltipStyle}
-             yAxisKey={yAxisKey}
+            yAxisKey={yAxisKey}
           />
         );
 
@@ -149,7 +147,10 @@ export function LiveChartRenderer({
               stroke="hsl(var(--muted-foreground))"
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(value) => [value, yAxisKey ?? "value"]}
+            />
             <Scatter name="Data" data={scatterData} fill={COLORS[4]} />
           </ScatterChart>
         );

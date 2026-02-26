@@ -7,6 +7,18 @@ function toNumber(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function average(nums: number[]): number {
+  if (!nums.length) return 0;
+  return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
+
+function stdDev(nums: number[], mean: number): number {
+  if (!nums.length) return 0;
+  const variance =
+    nums.reduce((sum, value) => sum + (value - mean) ** 2, 0) / nums.length;
+  return Math.sqrt(variance);
+}
+
 export type InsightResult = {
   insight: string;
   bullets: string[];
@@ -90,10 +102,64 @@ export function generateInsight(args: {
     };
   }
 
-  // Scatter: correlation-г энгийн байдлаар (placeholder)
+  // Scatter: Pearson correlation + энгийн outlier detection
+  const points = chartData
+    .map((r) => ({ x: Number(r[xAxisKey]), y: Number(r[yAxisKey]) }))
+    .filter((p) => Number.isFinite(p.x) && Number.isFinite(p.y));
+
+  if (points.length < 2) {
+    return {
+      insight: "Корреляци тооцоолоход хангалттай цэг алга.",
+      bullets: [`Нийт цэгийн тоо: ${points.length}`],
+    };
+  }
+
+  const xs = points.map((p) => p.x);
+  const ys = points.map((p) => p.y);
+  const meanX = average(xs);
+  const meanY = average(ys);
+  const sdX = stdDev(xs, meanX);
+  const sdY = stdDev(ys, meanY);
+
+  let cov = 0;
+  for (let i = 0; i < points.length; i += 1) {
+    cov += (points[i].x - meanX) * (points[i].y - meanY);
+  }
+  cov /= points.length;
+
+  const denom = sdX * sdY;
+  const r = denom === 0 ? 0 : cov / denom;
+
+  const absR = Math.abs(r);
+  const relationText =
+    absR >= 0.7
+      ? r > 0
+        ? "Хүчтэй эерэг хамаарал ажиглагдаж байна"
+        : "Хүчтэй сөрөг хамаарал ажиглагдаж байна"
+      : absR >= 0.4
+        ? r > 0
+          ? "Дунд зэрэг эерэг хамаарал ажиглагдаж байна"
+          : "Дунд зэрэг сөрөг хамаарал ажиглагдаж байна"
+        : absR >= 0.2
+          ? r > 0
+            ? "Сул эерэг хамаарал ажиглагдаж байна"
+            : "Сул сөрөг хамаарал ажиглагдаж байна"
+          : "Бараг хамааралгүй байна";
+
+  const zThreshold = 3;
+  const outlierCount = points.filter((p) => {
+    if (sdX === 0 || sdY === 0) return false;
+    const zx = (p.x - meanX) / sdX;
+    const zy = (p.y - meanY) / sdY;
+    return Math.sqrt(zx * zx + zy * zy) > zThreshold;
+  }).length;
+
   return {
-    insight:
-      "Scatter өгөгдөл дээр нарийвчилсан хамаарлыг тооцоолох боломжтой (корреляци гэх мэт).",
-    bullets: [`Нийт цэгийн тоо: ${chartData.length}`],
+    insight: `${relationText} (Pearson r = ${r.toFixed(3)}).`,
+    bullets: [
+      `Нийт цэг: ${points.length}`,
+      `Pearson r: ${r.toFixed(3)}`,
+      `Сэжигтэй outlier цэг: ${outlierCount}`,
+    ],
   };
 }
