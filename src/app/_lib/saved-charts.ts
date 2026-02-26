@@ -5,6 +5,9 @@ export type SavedChartSummary = {
   title: string;
   chartType: ChartType;
   fileName: string;
+  source?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chartData: Record<string, any>[];
   createdAt: string;
   updatedAt: string;
 };
@@ -17,7 +20,8 @@ export type SavedChartDetail = SavedChartSummary & {
   sql: string;
   xAxisKey: string;
   yAxisKey: string;
-  chartData: Record<string, unknown>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chartData: Record<string, any>[];
   insight: {
     insight: string;
     bullets: string[];
