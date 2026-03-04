@@ -85,8 +85,8 @@ export function ExcelUpload({
       const errorMsg = axios.isAxiosError(err)
         ? err.response?.data?.error || "Сервер талд алдаа гарлаа"
         : err instanceof Error
-          ? err.message
-          : "Тодорхойгүй алдаа гарлаа";
+        ? err.message
+        : "Тодорхойгүй алдаа гарлаа";
       setMessage(errorMsg);
       console.error("Upload error:", err);
     } finally {
@@ -139,7 +139,7 @@ export function ExcelUpload({
                       "relative cursor-pointer rounded-xl border-2 transition-all duration-200 outline-none",
                       isSelected
                         ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                        : "border-border hover:border-muted-foreground/30 bg-card",
+                        : "border-border hover:border-muted-foreground/30 bg-card"
                     )}
                   >
                     <div className="p-1">

@@ -31,6 +31,23 @@ export function ChartSuggestions({
     scoreByType.set(item.chartType, item.confidence);
   }
 
+  const priorityIndexByType = new Map<ChartType, number>(
+    CHART_TYPE_PRIORITY.map((type, index) => [type, index])
+  );
+
+  const sortedTypes: ChartType[] = CHART_TYPE_PRIORITY.filter(
+    (type): type is ChartType => Object.hasOwn(chartMeta, type)
+  ).sort((a, b) => {
+    const confA = scoreByType.get(a) ?? 0;
+    const confB = scoreByType.get(b) ?? 0;
+
+    if (confB !== confA) return confB - confA;
+
+    const indexA = priorityIndexByType.get(a) ?? Number.MAX_SAFE_INTEGER;
+    const indexB = priorityIndexByType.get(b) ?? Number.MAX_SAFE_INTEGER;
+    return indexA - indexB;
+  });
+
   if (!file) {
     return (
       <EmptyState
@@ -61,7 +78,7 @@ export function ChartSuggestions({
       </div>
 
       <div className="space-y-2 p-2">
-        {CHART_TYPE_PRIORITY.map((type) => {
+        {sortedTypes.map((type) => {
           const meta = chartMeta[type];
           const confidence = scoreByType.get(type) ?? 0;
           const Icon = meta.Icon;
