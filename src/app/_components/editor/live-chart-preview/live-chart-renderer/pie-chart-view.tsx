@@ -16,7 +16,7 @@ type Props = {
   yAxisKey?: string;
 };
 
-export function PieChartView({ data, colors,yAxisKey }: Props) {
+export function PieChartView({ data, colors, yAxisKey }: Props) {
   const slice = data.slice(0, 8);
 
   return (
@@ -30,7 +30,7 @@ export function PieChartView({ data, colors,yAxisKey }: Props) {
           label={({ name, percent }) =>
             `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
           }
-          outerRadius={200}
+          outerRadius={150}
           dataKey="value"
         >
           {slice.map((_, index) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
@@ -16,6 +16,31 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
   const [messages, setMessages] = useState<
     { role: "user" | "assistant"; content: string }[]
   >([]);
+  const messagesRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = (behavior?: ScrollBehavior) => {
+    const container = messagesRef.current;
+    if (!container) return;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: behavior ?? (prefersReducedMotion ? "auto" : "smooth"),
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (isLoading) {
+      scrollToBottom();
+    }
+  }, [isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +55,7 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
           ...prev,
           { role: "assistant", content: description },
         ]);
+        requestAnimationFrame(() => scrollToBottom());
       }
     }
   };
@@ -42,7 +68,7 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
         AI Chart Assistant
       </div>
       {messages.length > 0 && (
-        <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <div ref={messagesRef} className="space-y-2 max-h-60 overflow-y-auto pr-1">
           {messages.map((msg, index) => (
             <div
               key={`${msg.role}-${index}`}

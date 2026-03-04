@@ -69,7 +69,8 @@ export function useFileManagement() {
 
   const handleUpload = useCallback((file: UploadedFile) => {
     setFiles((prev) => [...prev, file]);
-    setSelectedFileIds((prev) => new Set(prev).add(file.id));
+    // Keep selection single: newly uploaded file becomes the only selected file.
+    setSelectedFileIds(new Set([file.id]));
   }, []);
 
   const handleRemove = useCallback(async (id: string) => {
@@ -89,13 +90,11 @@ export function useFileManagement() {
 
   const handleFileToggle = useCallback((fileId: string) => {
     setSelectedFileIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(fileId)) {
-        newSet.delete(fileId);
-      } else {
-        newSet.add(fileId);
+      // Keep selection single: either select this file or clear selection.
+      if (prev.has(fileId)) {
+        return new Set();
       }
-      return newSet;
+      return new Set([fileId]);
     });
   }, []);
 
