@@ -63,7 +63,7 @@ export function LiveChartPreview({
           title={result.title}
           chartId={savedChartId ?? undefined}
         >
-          <div className="h-[430px]">
+          <div className="h-[530px]">
             <LiveChartRenderer
               chartType={selectedChartType}
               chartData={result.chartData}
